@@ -1,0 +1,73 @@
+# BMad MCP Server Configuration
+# Similar to Serena's configuration approach
+
+# Web UI Auto-Start Settings (like Serena's dashboard)
+webui:
+  # Enable automatic Web UI startup when MCP server starts
+  auto_start: true
+  
+  # Automatically open Web UI in browser
+  auto_open: true
+  
+  # Web UI development server port
+  port: 5173
+  
+  # Only start Web UI in these server modes
+  enabled_modes: ["mcp", "dual"]
+
+# Server Settings
+server:
+  # REST API port
+  rest_port: 3001
+  
+  # Log level: debug, info, warn, error
+  log_level: "info"
+  
+  # Enable request logging
+  request_logging: false
+
+# Database Settings
+database:
+  # Auto-create database if not found
+  auto_create: true
+  
+  # Database file name
+  filename: "project.db"
+  
+  # Enable WAL mode for better concurrency
+  wal_mode: true
+
+# MCP Settings
+mcp:
+  # Server name for MCP clients
+  name: "bmad-unified-server"
+  
+  # Server version
+  version: "2.0.0"
+  
+  # Description for MCP clients
+  description: "Unified MCP/REST server for BMAD Method with service architecture"
+
+# Development Settings
+development:
+  # Enable hot reload for services
+  hot_reload: false
+  
+  # Enable detailed debug logging
+  verbose_logging: false
+  
+  # Auto-restart on file changes
+  auto_restart: false
+
+# Claude Desktop Integration
+claude_desktop:
+  # Recommended MCP configuration for Claude Desktop
+  recommended_config:
+    command: "npx"
+    args: ["bmad-unified-server", "--mode=mcp"]
+    cwd: "{project_directory}"
+    env:
+      BMAD_AUTO_START_WEBUI: "true"
+      BMAD_AUTO_OPEN_WEBUI: "true"
+      BMAD_SERVER_MODE: "mcp"
+      LOG_LEVEL: "info"

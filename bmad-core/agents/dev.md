@@ -11,7 +11,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -55,6 +55,7 @@ core_principles:
 commands:  
   - help: Show numbered list of the following commands to allow selection
   - run-tests: Execute linting and tests
+  - validate-story: Execute task validate-next-story-mcp.md (MCP enhanced validation)
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
   - develop-story:
@@ -66,11 +67,13 @@ commands:
     - blocking: "HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
     - ready-for-review: "Code matches requirements + All validations pass + Follows standards + File List complete"
     - completion: "All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON'T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure File List is Complete→run the task execute-checklist for the checklist story-dod-checklist→set story status: 'Ready for Review'→HALT"
+    - mcp-enhanced-workflow: "PREFERRED WORKFLOW - Use bmad_update_task_status to track progress, bmad_query_tasks to check dependencies, update story status in database upon completion. Falls back to file-based only if MCP unavailable."
+    - mcp-first-principle: "Always attempt MCP tools first. Use file operations only as emergency fallback when MCP server unreachable."
 
 dependencies:
   tasks:
-    - execute-checklist.md
-    - validate-next-story.md
+    - execute-checklist-mcp.md
+    - validate-next-story-mcp.md
   checklists:
     - story-dod-checklist.md
 ```

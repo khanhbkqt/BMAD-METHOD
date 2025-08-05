@@ -1,11 +1,14 @@
 {
-  "name": "bmad-method",
-  "version": "4.33.1",
-  "description": "Breakthrough Method of Agile AI-driven Development",
+  "name": "bmad-method-mcp",
+  "version": "4.35.0",
+  "description": "Breakthrough Method of Agile AI-driven Development with Enhanced MCP Integration",
   "main": "tools/cli.js",
   "bin": {
     "bmad": "tools/bmad-npx-wrapper.js",
-    "bmad-method": "tools/bmad-npx-wrapper.js"
+    "bmad-method": "tools/bmad-npx-wrapper.js",
+    "bmad-method-mcp": "tools/bmad-npx-wrapper.js",
+    "bmad-mcp-server": "tools/mcp-server/unified-server-v2.js",
+    "bmad-unified-server": "tools/mcp-server/unified-server-v2.js"
   },
   "scripts": {
     "build": "node tools/cli.js build",
@@ -16,6 +19,15 @@
     "flatten": "node tools/flattener/main.js",
     "install:bmad": "node tools/installer/bin/bmad.js install",
     "format": "prettier --write \"**/*.md\"",
+    "unified-server": "node tools/mcp-server/unified-server-v2.js",
+    "unified-server:rest": "BMAD_SERVER_MODE=rest node tools/mcp-server/unified-server-v2.js",
+    "unified-server:mcp": "BMAD_SERVER_MODE=mcp node tools/mcp-server/unified-server-v2.js",
+    "web-ui:dev": "cd tools/web-ui && npm run dev",
+    "web-ui:build": "cd tools/web-ui && npm run build",
+    "web-ui:preview": "cd tools/web-ui && npm run preview",
+    "mcp-server": "node tools/mcp-server/server.js",
+    "dev": "concurrently \"npm run unified-server:rest\" \"npm run web-ui:dev\"",
+    "start": "npm run dev",
     "version:patch": "node tools/version-bump.js patch",
     "version:minor": "node tools/version-bump.js minor",
     "version:major": "node tools/version-bump.js major",
@@ -35,15 +47,19 @@
   },
   "dependencies": {
     "@kayvan/markdown-tree-parser": "^1.5.0",
-    "bmad-method": "^4.30.3",
+    "@modelcontextprotocol/sdk": "^0.5.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.0",
+    "express": "^4.21.2",
     "fs-extra": "^11.3.0",
     "glob": "^11.0.3",
     "inquirer": "^8.2.6",
     "js-yaml": "^4.1.0",
     "minimatch": "^10.0.3",
-    "ora": "^5.4.1"
+    "ora": "^5.4.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1",
+    "concurrently": "^8.2.2"
   },
   "keywords": [
     "agile",
@@ -52,13 +68,19 @@
     "development",
     "methodology",
     "agents",
-    "bmad"
+    "bmad",
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "anthropic",
+    "sqlite",
+    "web-ui"
   ],
-  "author": "Brian (BMad) Madison",
+  "author": "Khanh Nguyen (fork of Brian Madison's bmad-method)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bmadcode/BMAD-METHOD.git"
+    "url": "git+https://github.com/khanhnguyen/BMAD-METHOD.git"
   },
   "engines": {
     "node": ">=20.0.0"

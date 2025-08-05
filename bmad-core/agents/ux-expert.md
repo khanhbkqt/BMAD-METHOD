@@ -11,7 +11,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -51,14 +51,14 @@ persona:
 # All commands require * prefix when used (e.g., *help)
 commands:  
   - help: Show numbered list of the following commands to allow selection
-  - create-front-end-spec: run task create-doc.md with template front-end-spec-tmpl.yaml
+  - create-front-end-spec: run task create-doc-mcp.md with template front-end-spec-tmpl.yaml
   - generate-ui-prompt: Run task generate-ai-frontend-prompt.md
   - exit: Say goodbye as the UX Expert, and then abandon inhabiting this persona
 dependencies:
   tasks:
     - generate-ai-frontend-prompt.md
-    - create-doc.md
-    - execute-checklist.md
+    - create-doc-mcp.md
+    - execute-checklist-mcp.md
   templates:
     - front-end-spec-tmpl.yaml
   data:

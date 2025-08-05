@@ -26,6 +26,10 @@ class ConfigLoader {
     return config['installation-options'] || {};
   }
 
+  async getInstallationConfig() {
+    return await this.load();
+  }
+
   async getAvailableAgents() {
     const agentsDir = path.join(this.getBmadCorePath(), 'agents');
     

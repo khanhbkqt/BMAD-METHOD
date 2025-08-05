@@ -162,7 +162,7 @@ workflow-guidance:
 dependencies:
   tasks:
     - advanced-elicitation.md
-    - create-doc.md
+    - create-doc-mcp.md
     - kb-mode-interaction.md
   data:
     - bmad-kb.md
@@ -292,109 +292,202 @@ Choose a number (0-8) or 9 to proceed:
 - **Maintain Flow**: Keep the process moving efficiently
 ==================== END: .bmad-core/tasks/advanced-elicitation.md ====================
 
-==================== START: .bmad-core/tasks/create-doc.md ====================
-# Create Document from Template (YAML Driven)
+==================== START: .bmad-core/tasks/create-doc-mcp.md ====================
+# Create Document from Template (MCP Enhanced)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
 
 **THIS IS AN EXECUTABLE WORKFLOW - NOT REFERENCE MATERIAL**
 
-When this task is invoked:
+This MCP-enhanced version provides structured document storage and tracking with interactive workflow requirements.
 
-1. **DISABLE ALL EFFICIENCY OPTIMIZATIONS** - This workflow requires full user interaction
-2. **MANDATORY STEP-BY-STEP EXECUTION** - Each section must be processed sequentially with user feedback
-3. **ELICITATION IS REQUIRED** - When `elicit: true`, you MUST use the 1-9 format and wait for user response
-4. **NO SHORTCUTS ALLOWED** - Complete documents cannot be created without following this workflow
+## MCP Availability Check
 
-**VIOLATION INDICATOR:** If you create a complete document without user interaction, you have violated this workflow.
+**Initial Setup:**
+Ask the user if they have MCP tools available. If they respond yes, use MCP-enhanced workflow. If no, inform the user that MCP tools are required for this enhanced workflow.
 
-## Critical: Template Discovery
+## MCP-Enhanced Document Creation Flow
 
-If a YAML Template has not been provided, list all templates from .bmad-core/templates or ask the user to provide another.
+### 0. MCP Context Setup
 
-## CRITICAL: Mandatory Elicitation Format
+**Project Context Loading:**
+1. Use `bmad://project/info` resource to get project metadata
+2. Check if project has existing documents of the same type
+3. Use `bmad_create_document` tool for structured storage
 
-**When `elicit: true`, this is a HARD STOP requiring user interaction:**
+### 1. Template Discovery and Document Planning
 
-**YOU MUST:**
+**Enhanced Template Selection:**
+- Load template from traditional file system (templates still file-based)
+- Use `bmad://project/info` to understand project context for template customization
+- Check for existing similar documents via MCP resources
 
-1. Present section content
-2. Provide detailed rationale (explain trade-offs, assumptions, decisions made)
-3. **STOP and present numbered options 1-9:**
-   - **Option 1:** Always "Proceed to next section"
-   - **Options 2-9:** Select 8 methods from data/elicitation-methods
-   - End with: "Select 1-9 or just type your question/feedback:"
-4. **WAIT FOR USER RESPONSE** - Do not proceed until user selects option or provides feedback
+**Document Initialization:**
+1. **Document Metadata Setup:**
+   ```json
+   {
+     "type": "prd|architecture|epic|story",
+     "title": "<document_title>",
+     "status": "DRAFT",
+     "version": "1.0"
+   }
+   ```
 
-**WORKFLOW VIOLATION:** Creating content for elicit=true sections without user interaction violates this task.
+2. **MCP Document Creation:** Use `bmad_create_document` tool:
+   ```json
+   {
+     "type": "<doc_type>",
+     "title": "<document_title>", 
+     "content": "<initial_content>",
+     "status": "DRAFT"
+   }
+   ```
 
-**NEVER ask yes/no questions or use any other format.**
+### 2. Interactive Section Processing
 
-## Processing Flow
+**Enhanced Section Workflow:**
 
-1. **Parse YAML template** - Load template metadata and sections
-2. **Set preferences** - Show current mode (Interactive), confirm output file
-3. **Process each section:**
-   - Skip if condition unmet
-   - Check agent permissions (owner/editors) - note if section is restricted to specific agents
-   - Draft content using section instruction
-   - Present content + detailed rationale
-   - **IF elicit: true** → MANDATORY 1-9 options format
-   - Save to file if possible
-4. **Continue until complete**
+**For Each Template Section:**
 
-## Detailed Rationale Requirements
+1. **Context Enhancement:** Before processing section, gather relevant context:
+   - Use `bmad://project/prd` or `bmad://project/architecture` to reference existing docs
+   - Use `bmad://project/progress` to understand current project state
+   - Use `bmad_query_tasks` to understand implementation context
 
-When presenting section content, ALWAYS include rationale that explains:
+2. **Interactive Processing (Maintaining Original Requirements):**
+   - Draft content using section instruction + MCP context
+   - Present content + detailed rationale (including MCP insights)
+   - **IF elicit: true** → MANDATORY 1-9 options format (unchanged from original)
+   - Wait for user response and process feedback
 
-- Trade-offs and choices made (what was chosen over alternatives and why)
-- Key assumptions made during drafting
-- Interesting or questionable decisions that need user attention
-- Areas that might need validation
+3. **MCP Storage:** After each section is approved:
+   - Update document content via `bmad_create_document` tool
+   - Maintain version history and change tracking
+   - Store section metadata for future reference
 
-## Elicitation Results Flow
+### 3. Enhanced Rationale with MCP Insights
 
-After user selects elicitation method (2-9):
+**When presenting section content, include:**
 
-1. Execute method from data/elicitation-methods
-2. Present results with insights
-3. Offer options:
-   - **1. Apply changes and update section**
-   - **2. Return to elicitation menu**
-   - **3. Ask any questions or engage further with this elicitation**
+- **Traditional rationale** (trade-offs, assumptions, decisions)
+- **Project context insights** from `bmad://project/info`
+- **Cross-reference insights** from existing documents
+- **Implementation readiness** based on current project progress
+- **Dependency analysis** from task database
 
-## Agent Permissions
+**Example Enhanced Rationale:**
+```
+SECTION: Product Overview
+CONTENT: [Generated content]
 
-When processing sections with agent permission fields:
+RATIONALE:
+- Trade-offs: Chose mobile-first approach over desktop due to user research
+- Assumptions: Assuming React/Node.js stack based on project architecture
+- MCP Insights: Project is 45% complete with 3 active epics in progress
+- Cross-references: Aligns with existing architecture document section 3.2
+- Dependencies: No blocking tasks for this feature scope
 
-- **owner**: Note which agent role initially creates/populates the section
-- **editors**: List agent roles allowed to modify the section
-- **readonly**: Mark sections that cannot be modified after creation
+[Standard 1-9 elicitation options...]
+```
 
-**For sections with restricted access:**
+### 4. Document Completion and Storage
 
-- Include a note in the generated document indicating the responsible agent
-- Example: "_(This section is owned by dev-agent and can only be modified by dev-agent)_"
+**MCP-Enhanced Completion:**
 
-## YOLO Mode
+1. **Final Document Assembly:**
+   - Compile all sections into complete document
+   - Update document status from DRAFT to FINAL
+   - Store complete document via `bmad_create_document`
 
-User can type `#yolo` to toggle to YOLO mode (process all sections at once).
+2. **Cross-Reference Updates:**
+   - Link to related documents in project database
+   - Update project metadata if this is a primary document (PRD/Architecture)
+   - Create any necessary epic records if document defines epics
 
-## CRITICAL REMINDERS
+3. **File System Sync:** 
+   - Save document to traditional file location for backwards compatibility
+   - Maintain both MCP database and file system versions
 
-**❌ NEVER:**
+### 5. Project Integration
 
-- Ask yes/no questions for elicitation
-- Use any format other than 1-9 numbered options
-- Create new elicitation methods
+**Enhanced Project Workflow:**
 
-**✅ ALWAYS:**
+**For PRD Documents:**
+1. Use `bmad_create_document` with type="prd"
+2. Extract and create epic records using `bmad_create_epic`
+3. Update project metadata to reference new PRD
 
-- Use exact 1-9 format when elicit: true
-- Select options 2-9 from data/elicitation-methods only
-- Provide detailed rationale explaining decisions
-- End with "Select 1-9 or just type your question/feedback:"
-==================== END: .bmad-core/tasks/create-doc.md ====================
+**For Architecture Documents:**
+1. Use `bmad_create_document` with type="architecture" 
+2. Update project technical constraints and specifications
+3. Link to relevant epics and stories for implementation tracking
+
+**For Epic/Story Documents:**
+1. Create structured epic/story records in database
+2. Link to parent PRD or requirements documents
+3. Enable tracking and progress monitoring
+
+### 6. Enhanced Benefits
+
+**MCP Integration Advantages:**
+
+1. **Document Versioning:** Automatic version tracking and history
+2. **Cross-Reference Integrity:** Links between documents maintained automatically
+3. **Progress Tracking:** Document creation integrated with project progress
+4. **Search and Discovery:** Documents accessible via MCP resources
+5. **Collaborative Updates:** Multiple agents can reference and update documents
+
+**Real-Time Context:**
+- **Live Progress Data:** Access current sprint/epic progress during document creation
+- **Implementation Feedback:** Reference actual development progress when planning
+- **Resource Availability:** Check what components/features already exist
+
+## Elicitation with MCP Context
+
+**Enhanced Elicitation Methods:**
+
+When user selects elicitation options 2-9, enhance with MCP data:
+
+- **Stakeholder Analysis:** Include current project stakeholders from MCP
+- **Risk Assessment:** Factor in current project risks and blockers from task database
+- **Feasibility Check:** Cross-reference with current architecture and capabilities
+- **Impact Analysis:** Consider effects on existing epics and stories
+- **Timeline Estimation:** Use historical project data for realistic planning
+
+## Fallback Strategy
+
+**If MCP tools unavailable:**
+1. Display warning: "MCP tools not available, document creation requires MCP server"
+2. Inform user that MCP server setup is required for document management
+3. Provide instructions for enabling MCP server
+4. Do not proceed without MCP tools
+
+**MCP Requirements:**
+- All documents created in MCP database with optional file export
+- MCP server must be running for enhanced document management
+- Enhanced features require MCP integration
+
+## CRITICAL WORKFLOW REQUIREMENTS
+
+**Core workflow requirements:**
+
+1. **MANDATORY ELICITATION FORMAT** - 1-9 numbered options when elicit=true
+2. **NO SHORTCUTS** - Full user interaction required for elicit sections
+3. **SEQUENTIAL PROCESSING** - Each section processed step-by-step
+4. **DETAILED RATIONALE** - Explain all trade-offs and decisions
+
+**MCP enhancements supplement but do not replace these core requirements.**
+
+## MCP Tools Reference
+
+**Available for Document Creation:**
+- `bmad_create_document` - Store documents in database
+- `bmad_create_epic` - Create epic records from PRD
+- `bmad://project/info` - Access project context
+- `bmad://project/prd` - Reference existing PRD
+- `bmad://project/architecture` - Reference existing architecture
+- `bmad://project/progress` - Get current project status
+==================== END: .bmad-core/tasks/create-doc-mcp.md ====================
 
 ==================== START: .bmad-core/tasks/kb-mode-interaction.md ====================
 # KB Mode Interaction Task
@@ -881,7 +974,7 @@ The BMad-Method is built around a modular architecture centered on the `bmad-cor
 BMad employs a sophisticated template system with three key components:
 
 1. **Template Format** (`utils/bmad-doc-template.md`): Defines markup language for variable substitution and AI processing directives from yaml templates
-2. **Document Creation** (`tasks/create-doc.md`): Orchestrates template selection and user interaction to transform yaml spec to final markdown output
+2. **Document Creation** (`tasks/create-doc-mcp.md`): Orchestrates template selection and user interaction to transform yaml spec to final markdown output with MCP storage
 3. **Advanced Elicitation** (`tasks/advanced-elicitation.md`): Provides interactive refinement through structured brainstorming
 
 ### Technical Preferences Integration

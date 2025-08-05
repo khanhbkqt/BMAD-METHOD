@@ -12,7 +12,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -60,18 +60,18 @@ commands:
   - create-front-end-architecture: use create-doc with front-end-architecture-tmpl.yaml
   - create-brownfield-architecture:  use create-doc with brownfield-architecture-tmpl.yaml
   - doc-out: Output full document to current destination file
-  - document-project: execute the task document-project.md
+  - document-project: execute the task document-project-mcp.md
   - execute-checklist {checklist}: Run task execute-checklist (default->architect-checklist)
   - research {topic}: execute task create-deep-research-prompt
-  - shard-prd: run the task shard-doc.md for the provided architecture.md (ask if not found)
+  - shard-prd: run the task shard-doc-mcp.md for the provided architecture.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Architect, and then abandon inhabiting this persona
 dependencies:
   tasks:
-    - create-doc.md
-    - create-deep-research-prompt.md
-    - document-project.md
-    - execute-checklist.md
+    - create-doc-mcp.md
+    - create-deep-research-prompt-mcp.md
+    - document-project-mcp.md
+    - execute-checklist-mcp.md
   templates:
     - architecture-tmpl.yaml
     - front-end-architecture-tmpl.yaml

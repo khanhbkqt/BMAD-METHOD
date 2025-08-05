@@ -12,7 +12,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -140,7 +140,7 @@ workflow-guidance:
 dependencies:
   tasks:
     - advanced-elicitation.md
-    - create-doc.md
+    - create-doc-mcp.md
     - kb-mode-interaction.md
   data:
     - bmad-kb.md

@@ -18,3 +18,86 @@ devLoadAlwaysFiles:
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
+
+# MCP (Model Context Protocol) Configuration
+mcp:
+  # Enable MCP features (set to false to disable MCP integration)
+  enabled: true
+  
+  # MCP Server Configuration
+  server:
+    # Command to start MCP server (uses npx bmad-method bmad-mcp-server by default)
+    command: "npx bmad-method bmad-mcp-server"
+    # Working directory for MCP server (uses current project directory)
+    workingDirectory: "."
+    # Timeout for MCP operations in milliseconds
+    timeout: 30000
+  
+  # Database Configuration
+  database:
+    # SQLite database path for MCP data storage
+    path: ".bmad/project.db"
+    # Auto-create database if it doesn't exist
+    autoCreate: true
+    # Backup database on schema changes
+    backup: true
+  
+  # Enhanced Features
+  features:
+    # Use MCP for story creation instead of file-based approach
+    mcpStoryCreation: true
+    # Use MCP for document management and cross-references
+    mcpDocumentManagement: true
+    # Use MCP for progress tracking and reporting
+    mcpProgressTracking: true
+    # Use MCP for epic and sprint management
+    mcpProjectManagement: true
+    # Fall back to file-based operations if MCP unavailable
+    fallbackToFiles: true
+  
+  # Agent MCP Integration Settings
+  agents:
+    # Scrum Master (SM) Agent MCP settings
+    sm:
+      preferMcpTasks: true
+      mcpStoryCreation: true
+      mcpProgressTracking: true
+    
+    # Developer (Dev) Agent MCP settings  
+    dev:
+      preferMcpValidation: true
+      mcpStatusUpdates: true
+      mcpProgressTracking: true
+    
+    # Product Manager (PM) Agent MCP settings
+    pm:
+      preferMcpDocuments: true
+      mcpCrossReferences: true
+      mcpVersioning: true
+  
+  # Resource Configuration
+  resources:
+    # Enable bmad:// URI scheme for accessing project data
+    enableUriScheme: true
+    # Cache resource data for performance
+    cacheDuration: 300 # seconds
+    # Maximum resource size to cache
+    maxCacheSize: "10MB"
+  
+  # Workflow Integration
+  workflows:
+    # Use MCP-enhanced workflows when available
+    preferMcpWorkflows: true
+    # Default to MCP workflows for new projects
+    defaultMcpForGreenfield: true
+    # Upgrade existing projects to MCP workflows
+    upgradeExistingProjects: false
+  
+  # Development & Debugging
+  debug:
+    # Enable MCP debug logging
+    enabled: false
+    # Log MCP operations to debug file
+    logFile: ".ai/mcp-debug.log"
+    # Log level: error, warn, info, debug
+    logLevel: "info"

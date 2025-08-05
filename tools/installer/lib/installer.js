@@ -238,6 +238,9 @@ class Installer {
       spinner.text = "Copying common utilities...";
       await this.copyCommonItems(installDir, ".bmad-core", spinner);
 
+      // Copy MCP server and web UI if included
+      await this.copyMcpComponents(installDir, config, spinner);
+
       // Get list of all files for manifest
       const foundFiles = await resourceLocator.findFiles("**/*", {
         cwd: bmadCoreDestDir,
@@ -353,6 +356,39 @@ class Installer {
       spinner.text = "Copying common utilities...";
       const commonFiles = await this.copyCommonItems(installDir, ".bmad-core", spinner);
       files.push(...commonFiles);
+    } else if (config.installType === "mcp") {
+      // MCP installation - copy entire .bmad-core folder + MCP server
+      spinner.text = "Installing BMad Method with MCP server...";
+      const sourceDir = resourceLocator.getBmadCorePath();
+      const bmadCoreDestDir = path.join(installDir, ".bmad-core");
+      await fileManager.copyDirectoryWithRootReplacement(sourceDir, bmadCoreDestDir, ".bmad-core");
+      
+      // Copy common/ items to .bmad-core
+      spinner.text = "Copying common utilities...";
+      await this.copyCommonItems(installDir, ".bmad-core", spinner);
+
+      // Copy MCP server
+      await this.copyMcpComponents(installDir, config, spinner);
+
+      // Get list of all files for manifest
+      const foundFiles = await resourceLocator.findFiles("**/*", {
+        cwd: bmadCoreDestDir,
+        nodir: true,
+        ignore: ["**/.git/**", "**/node_modules/**"],
+      });
+      files = foundFiles.map((file) => path.join(".bmad-core", file));
+      
+      // Add MCP files
+      const mcpFiles = await this.getMcpComponentFiles(installDir);
+      files.push(...mcpFiles);
+    } else if (config.installType === "web-ui-only") {
+      // Web UI only installation
+      spinner.text = "Installing web UI components...";
+      await this.copyMcpComponents(installDir, config, spinner);
+      
+      // Get list of MCP files for manifest
+      const mcpFiles = await this.getMcpComponentFiles(installDir);
+      files.push(...mcpFiles);
     } else if (config.installType === "expansion-only") {
       // Expansion-only installation - DO NOT create .bmad-core
       // Only install expansion packs
@@ -1766,6 +1802,179 @@ class Installer {
     child.on('exit', (code) => {
       process.exit(code);
     });
+  }
+
+  async copyMcpComponents(installDir, config, spinner) {
+    const installConfig = await configLoader.getInstallationConfig();
+    const installOption = installConfig["installation-options"][config.installType];
+    
+    if (!installOption?.includes || installOption.includes.length === 0) {
+      return; // No MCP components to install
+    }
+
+    // Get paths to source MCP components
+    const packageRoot = path.join(__dirname, '..', '..', '..');
+    
+    for (const component of installOption.includes) {
+      if (component === 'mcp-server') {
+        spinner.text = "Installing MCP server...";
+        const sourcePath = path.join(packageRoot, 'tools', 'mcp-server');
+        const destPath = path.join(installDir, 'mcp-server');
+        
+        await fileManager.copyDirectory(sourcePath, destPath);
+        
+        // Create package.json for MCP server dependencies
+        const mcpPackageJson = {
+          "name": "bmad-mcp-server",
+          "version": "1.0.0",
+          "main": "server.js",
+          "scripts": {
+            "start": "node server.js",
+            "test": "node test-mcp.js"
+          },
+          "dependencies": {
+            "@modelcontextprotocol/sdk": "^0.5.0",
+            "sqlite3": "^5.1.7",
+            "express": "^4.21.2",
+            "uuid": "^9.0.1"
+          }
+        };
+        
+        await fs.writeJSON(path.join(destPath, 'package.json'), mcpPackageJson, { spaces: 2 });
+      }
+      
+      if (component === 'web-ui') {
+        spinner.text = "Installing web UI...";
+        const sourcePath = path.join(packageRoot, 'tools', 'web-ui');
+        const destPath = path.join(installDir, 'web-ui');
+        
+        await fileManager.copyDirectory(sourcePath, destPath);
+      }
+    }
+
+    // Create startup scripts
+    await this.createMcpStartupScripts(installDir, spinner);
+  }
+
+  async getMcpComponentFiles(installDir) {
+    const files = [];
+    
+    // Check for MCP server files
+    const mcpServerPath = path.join(installDir, 'mcp-server');
+    if (await fileManager.pathExists(mcpServerPath)) {
+      const mcpFiles = await resourceLocator.findFiles("**/*", {
+        cwd: mcpServerPath,
+        nodir: true,
+        ignore: ["**/node_modules/**", "**/.git/**"],
+      });
+      files.push(...mcpFiles.map(file => `mcp-server/${file}`));
+    }
+    
+    // Check for web UI files
+    const webUiPath = path.join(installDir, 'web-ui');
+    if (await fileManager.pathExists(webUiPath)) {
+      const webFiles = await resourceLocator.findFiles("**/*", {
+        cwd: webUiPath,
+        nodir: true,
+        ignore: ["**/node_modules/**", "**/.git/**", "**/dist/**"],
+      });
+      files.push(...webFiles.map(file => `web-ui/${file}`));
+    }
+    
+    return files;
+  }
+
+  async createMcpStartupScripts(installDir, spinner) {
+    spinner.text = "Creating startup scripts...";
+    
+    // Create unified server startup script
+    const startUnifiedScript = `#!/bin/bash
+echo "Starting BMad Unified Server (MCP + REST API)..."
+cd mcp-server
+npm install
+node unified-server-v2.js
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-unified-server.sh'), startUnifiedScript, { mode: 0o755 });
+    
+    // Create REST-only server script
+    const startRestScript = `#!/bin/bash
+echo "Starting BMad REST API Server..."
+cd mcp-server
+npm install
+BMAD_SERVER_MODE=rest node unified-server-v2.js
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-rest-server.sh'), startRestScript, { mode: 0o755 });
+    
+    // Create MCP-only server script
+    const startMcpScript = `#!/bin/bash
+echo "Starting BMad MCP Server..."
+cd mcp-server
+npm install
+BMAD_SERVER_MODE=mcp node unified-server-v2.js
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-mcp-server.sh'), startMcpScript, { mode: 0o755 });
+    
+    // Create web UI script
+    const startWebScript = `#!/bin/bash
+echo "Starting BMad Web UI..."
+cd web-ui
+npm install
+npm run dev
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-web-ui.sh'), startWebScript, { mode: 0o755 });
+    
+    // Create development script (REST + Web UI)
+    const startDevScript = `#!/bin/bash
+echo "Starting BMad Development Environment..."
+
+# Start REST server in background
+cd mcp-server
+npm install
+BMAD_SERVER_MODE=rest node unified-server-v2.js &
+REST_PID=$!
+
+# Wait for REST server to start
+sleep 3
+
+# Start web UI
+cd ../web-ui
+npm install
+npm run dev &
+WEB_PID=$!
+
+echo "REST Server PID: $REST_PID"
+echo "Web UI PID: $WEB_PID"
+echo "Development environment running. Press Ctrl+C to stop."
+
+# Wait for user interrupt
+trap "kill $REST_PID $WEB_PID; exit" INT
+wait
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-dev-environment.sh'), startDevScript, { mode: 0o755 });
+    
+    // Create Windows batch files
+    const startMcpBat = `@echo off
+echo Starting BMad MCP Server...
+cd mcp-server
+npm install
+node server.js
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-mcp-server.bat'), startMcpBat);
+    
+    const startWebBat = `@echo off
+echo Starting BMad Web UI...
+cd web-ui
+npm install
+npm run dev
+`;
+    
+    await fs.writeFile(path.join(installDir, 'start-web-ui.bat'), startWebBat);
   }
 }
 

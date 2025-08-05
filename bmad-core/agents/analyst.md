@@ -11,7 +11,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -59,17 +59,17 @@ commands:
   - create-competitor-analysis: use task create-doc with competitor-analysis-tmpl.yaml
   - yolo: Toggle Yolo Mode
   - doc-out: Output full document in progress to current destination file
-  - research-prompt {topic}: execute task create-deep-research-prompt.md
+  - research-prompt {topic}: execute task create-deep-research-prompt-mcp.md
   - brainstorm {topic}: Facilitate structured brainstorming session (run task facilitate-brainstorming-session.md with template brainstorming-output-tmpl.yaml)
   - elicit: run the task advanced-elicitation
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
 dependencies:
   tasks:
     - facilitate-brainstorming-session.md
-    - create-deep-research-prompt.md
-    - create-doc.md
+    - create-deep-research-prompt-mcp.md
+    - create-doc-mcp.md
     - advanced-elicitation.md
-    - document-project.md
+    - document-project-mcp.md
   templates:
     - project-brief-tmpl.yaml
     - market-research-tmpl.yaml

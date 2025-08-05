@@ -1,0 +1,420 @@
+workflow:
+  id: greenfield-fullstack-mcp
+  name: Greenfield Full-Stack Application Development (MCP Enhanced)
+  description: >-
+    MCP-enhanced agent workflow for building full-stack applications from concept to development.
+    Uses MCP tools for structured data management, progress tracking, and cross-references.
+  type: greenfield
+  project_types:
+    - web-app
+    - saas
+    - enterprise-app
+    - prototype
+    - mvp
+
+  mcp_requirements:
+    server: bmad-mcp-server
+    tools_required:
+      - bmad_create_document
+      - bmad_create_epic
+      - bmad_create_story
+      - bmad_update_task_status
+      - bmad_query_tasks
+      - bmad_get_project_progress
+    resources_required:
+      - bmad://project/info
+      - bmad://project/progress
+      - bmad://project/prd
+      - bmad://project/architecture
+
+  sequence:
+    - agent: analyst
+      creates: project-brief.md
+      mcp_actions:
+        - tool: bmad_create_document
+          params:
+            type: "project-brief"
+            title: "Project Brief"
+            content: "Generated project brief content"
+            status: "DRAFT"
+      optional_steps:
+        - brainstorming_session
+        - market_research_prompt
+      notes: "Creates project brief with MCP storage. Brief accessible via bmad://documents/project-brief/[id]. SAVE OUTPUT: Copy final project-brief.md to your project's docs/ folder."
+
+    - agent: pm
+      creates: prd.md
+      requires: project-brief.md
+      mcp_actions:
+        - tool: bmad_create_document
+          params:
+            type: "prd"
+            title: "Product Requirements Document"
+            content: "Generated PRD content"
+            status: "DRAFT"
+        - resource: bmad://documents/project-brief/latest
+          purpose: "Reference project brief during PRD creation"
+      notes: "Creates PRD using MCP-enhanced document creation. Use *create-prd-mcp command. PRD accessible via bmad://project/prd resource. SAVE OUTPUT: Copy final prd.md to your project's docs/ folder."
+
+    - agent: ux-expert
+      creates: front-end-spec.md
+      requires: prd.md
+      mcp_actions:
+        - tool: bmad_create_document
+          params:
+            type: "frontend-spec"
+            title: "Frontend Specification"
+            content: "Generated frontend spec content"
+            status: "DRAFT"
+        - resource: bmad://project/prd
+          purpose: "Reference PRD requirements during UI/UX design"
+      optional_steps:
+        - user_research_prompt
+      notes: "Creates UI/UX specification with MCP cross-references to PRD. Spec accessible via bmad://documents/frontend-spec/[id]. SAVE OUTPUT: Copy final front-end-spec.md to your project's docs/ folder."
+
+    - agent: ux-expert
+      creates: v0_prompt (optional)
+      requires: front-end-spec.md
+      condition: user_wants_ai_generation
+      mcp_actions:
+        - resource: bmad://documents/frontend-spec/latest
+          purpose: "Reference frontend spec for AI prompt generation"
+      notes: "OPTIONAL BUT RECOMMENDED: Generate AI UI prompt using MCP context. Use the generate-ai-frontend-prompt task with MCP data integration. User can then generate UI in external tool and download project structure."
+
+    - agent: architect
+      creates: fullstack-architecture.md
+      requires:
+        - prd.md
+        - front-end-spec.md
+      mcp_actions:
+        - tool: bmad_create_document
+          params:
+            type: "architecture"
+            title: "Full-Stack Architecture"
+            content: "Generated architecture content"
+            status: "DRAFT"
+        - resource: bmad://project/prd
+          purpose: "Cross-reference PRD requirements"
+        - resource: bmad://documents/frontend-spec/latest
+          purpose: "Integrate frontend specifications"
+      optional_steps:
+        - technical_research_prompt
+        - review_generated_ui_structure
+      notes: "Creates comprehensive architecture using MCP context. Architecture accessible via bmad://project/architecture. May suggest PRD updates stored via MCP. SAVE OUTPUT: Copy final fullstack-architecture.md to your project's docs/ folder."
+
+    - agent: pm
+      updates: prd.md (if needed)
+      requires: fullstack-architecture.md
+      condition: architecture_suggests_prd_changes
+      mcp_actions:
+        - tool: bmad_create_document
+          params:
+            type: "prd"
+            title: "Product Requirements Document"
+            content: "Updated PRD content"
+            status: "FINAL"
+        - resource: bmad://project/architecture
+          purpose: "Reference architecture recommendations"
+      notes: "If architect suggests story changes, update PRD via MCP tools. Updated PRD immediately available via bmad://project/prd. Re-export complete prd.md to docs/ folder."
+
+    - agent: po
+      validates: all_artifacts
+      uses: po-master-checklist
+      mcp_actions:
+        - resource: bmad://project/info
+          purpose: "Get complete project context"
+        - resource: bmad://project/prd
+          purpose: "Validate PRD completeness"
+        - resource: bmad://project/architecture
+          purpose: "Validate architecture alignment"
+      notes: "Validates all documents using MCP cross-references for consistency. Can access all project documents via MCP resources for comprehensive validation."
+
+    - agent: various
+      updates: any_flagged_documents
+      condition: po_checklist_issues
+      mcp_actions:
+        - tool: bmad_create_document
+          purpose: "Update flagged documents via MCP"
+      notes: "If PO finds issues, update documents via MCP tools. All agents can access latest versions via MCP resources. Re-export updated documents to docs/ folder."
+
+    - project_setup_guidance:
+      action: guide_project_structure
+      condition: user_has_generated_ui
+      mcp_actions:
+        - resource: bmad://project/architecture
+          purpose: "Reference architecture guidance for project setup"
+      notes: "Use MCP architecture data for project setup guidance. If user generated UI with v0/Lovable: Follow architecture guidance from bmad://project/architecture for repo structure."
+
+    - development_order_guidance:
+      action: guide_development_sequence
+      mcp_actions:
+        - resource: bmad://project/prd
+          purpose: "Reference epic and story priorities"
+        - tool: bmad_get_project_progress
+          purpose: "Understand current development status"
+      notes: "Use MCP data to guide development sequence. Reference epic priorities from PRD and current progress for optimal story order."
+
+    - agent: po
+      action: shard_documents
+      creates: sharded_docs
+      requires: all_artifacts_in_project
+      mcp_actions:
+        - resource: bmad://project/prd
+          purpose: "Access PRD for sharding"
+        - tool: bmad_create_epic
+          purpose: "Create epic records from sharded PRD"
+      notes: |
+        Enhanced sharding with MCP integration:
+        - Option A: Use PO agent with MCP: @po then ask to shard docs/prd.md with MCP enhancement
+        - Option B: Manual: Drag shard-doc task + docs/prd.md into chat with MCP tools
+        - Creates both file-based sharded content AND MCP epic records
+        - Epic progress trackable via bmad://epics/[num]/progress
+
+    - agent: sm
+      action: create_story
+      creates: story.md
+      requires: sharded_docs
+      repeats: for_each_epic
+      mcp_actions:
+        - tool: bmad_create_story
+          params:
+            epic_num: "[determined_epic]"
+            title: "[story_title]"
+            description: "[story_description]"
+            assignee: "dev"
+            priority: "MEDIUM"
+        - resource: bmad://epics/[epic_num]/tasks
+          purpose: "Check existing stories in epic"
+        - resource: bmad://project/architecture
+          purpose: "Reference technical constraints"
+      notes: |
+        MCP-enhanced story creation cycle:
+        - SM Agent (New Chat): @sm → *draft-mcp
+        - Creates story in both file system AND MCP database
+        - Story trackable via bmad_query_tasks and epic progress
+        - Story starts in "TODO" status in database
+
+    - agent: analyst/pm
+      action: review_draft_story
+      updates: story.md
+      requires: story.md
+      optional: true
+      condition: user_wants_story_review
+      mcp_actions:
+        - tool: bmad_query_tasks
+          purpose: "Get story details for review"
+        - tool: bmad_update_task_status
+          purpose: "Update story status after approval"
+      notes: |
+        OPTIONAL: Review and approve draft story with MCP tracking
+        - Access story via bmad_query_tasks
+        - Review story completeness and alignment
+        - Update status: TODO → IN_PROGRESS via bmad_update_task_status
+
+    - agent: dev
+      action: implement_story
+      creates: implementation_files
+      requires: story.md
+      mcp_actions:
+        - tool: bmad_query_tasks
+          purpose: "Get assigned story details"
+        - tool: bmad_update_task_status
+          purpose: "Track implementation progress"
+        - resource: bmad://project/architecture
+          purpose: "Reference implementation guidelines"
+      notes: |
+        MCP-enhanced development:
+        - Dev Agent (New Chat): @dev with MCP tools available
+        - Use *validate-story-mcp for story validation
+        - Track progress via bmad_update_task_status
+        - Reference architecture via bmad://project/architecture
+        - Update story status to "DONE" when complete
+
+    - agent: qa
+      action: review_implementation
+      updates: implementation_files
+      requires: implementation_files
+      optional: true
+      mcp_actions:
+        - tool: bmad_query_tasks
+          purpose: "Get story implementation details"
+        - tool: bmad_update_task_status
+          purpose: "Update review status"
+      notes: |
+        OPTIONAL: QA Agent with MCP tracking
+        - Access story details via bmad_query_tasks
+        - Track review status via bmad_update_task_status
+        - Update story status based on review results
+
+    - agent: dev
+      action: address_qa_feedback
+      updates: implementation_files
+      condition: qa_left_unchecked_items
+      mcp_actions:
+        - tool: bmad_query_tasks
+          purpose: "Get QA feedback and unchecked items"
+        - tool: bmad_update_task_status
+          purpose: "Update completion status"
+      notes: |
+        Address QA feedback with MCP tracking:
+        - Access feedback via MCP story data
+        - Track resolution via bmad_update_task_status
+        - Return to QA for final approval
+
+    - repeat_development_cycle:
+      action: continue_for_all_stories
+      mcp_actions:
+        - resource: bmad://project/progress
+          purpose: "Track overall project completion"
+        - resource: bmad://epics/[num]/progress
+          purpose: "Track individual epic progress"
+      notes: |
+        Repeat story cycle with MCP progress tracking:
+        - Monitor epic completion via bmad://epics/[num]/progress
+        - Track overall progress via bmad://project/progress
+        - Continue until all stories in PRD are complete
+
+    - agent: po
+      action: epic_retrospective
+      creates: epic-retrospective.md
+      condition: epic_complete
+      optional: true
+      mcp_actions:
+        - resource: bmad://epics/[num]/progress
+          purpose: "Get epic completion data"
+        - tool: bmad_create_document
+          params:
+            type: "retrospective"
+            title: "Epic Retrospective"
+            content: "Retrospective analysis"
+            status: "FINAL"
+      notes: |
+        OPTIONAL: MCP-enhanced epic retrospective
+        - Use epic progress data from MCP for analysis
+        - Store retrospective as MCP document
+        - Include velocity metrics and completion insights
+
+    - workflow_end:
+      action: project_complete
+      mcp_actions:
+        - resource: bmad://project/progress
+          purpose: "Final project completion status"
+      notes: |
+        Project completion with MCP insights:
+        - Final completion: 100% via bmad://project/progress
+        - All stories implemented and tracked via MCP
+        - Complete audit trail available in MCP database
+        
+        Reference: {root}/data/bmad-kb.md#MCP Enhanced IDE Development
+
+  mcp_benefits:
+    real_time_tracking:
+      - Live progress monitoring via bmad://project/progress
+      - Epic completion percentages via bmad://epics/[num]/progress
+      - Task status tracking via bmad_query_tasks
+    
+    cross_references:
+      - Automatic document linking via MCP resources
+      - Requirements traceability from PRD to stories
+      - Architecture alignment validation
+    
+    collaboration:
+      - All agents access same structured data
+      - No file conflicts with database storage
+      - Real-time status updates across agent sessions
+    
+    audit_trail:
+      - Complete change history in MCP database
+      - Who created/modified what and when
+      - Decision tracking and context preservation
+
+  fallback_strategy:
+    condition: mcp_unavailable
+    action: |
+      If MCP tools are not available:
+      1. Display warning: "MCP tools unavailable, using traditional file-based workflow"
+      2. Fall back to original greenfield-fullstack.yaml workflow
+      3. Use file-based document management instead of MCP tools
+      4. Suggest enabling MCP server for enhanced capabilities
+
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Start: Greenfield Project + MCP] --> B[analyst: project-brief.md + MCP storage]
+        B --> C[pm: prd.md + MCP cross-refs]
+        C --> D[ux-expert: frontend-spec.md + MCP integration]
+        D --> D2{Generate v0 prompt with MCP?}
+        D2 -->|Yes| D3[ux-expert: create v0 prompt + MCP context]
+        D2 -->|No| E[architect: architecture.md + MCP validation]
+        D3 --> D4[User: generate UI in v0/Lovable]
+        D4 --> E
+        E --> F{Architecture suggests PRD changes?}
+        F -->|Yes| G[pm: update prd.md via MCP]
+        F -->|No| H[po: validate all artifacts via MCP]
+        G --> H
+        H --> I{PO finds issues?}
+        I -->|Yes| J[Return to agent for MCP-tracked fixes]
+        I -->|No| K[po: shard documents + create MCP epics]
+        J --> H
+        
+        K --> L[sm: create story via MCP tools]
+        L --> M{Review draft story?}
+        M -->|Yes| N[analyst/pm: review + MCP status update]
+        M -->|No| O[dev: implement story + MCP tracking]
+        N --> O
+        O --> P{QA review?}
+        P -->|Yes| Q[qa: review + MCP status tracking]
+        P -->|No| R{More stories via MCP progress?}
+        Q --> S{QA found issues?}
+        S -->|Yes| T[dev: address feedback + MCP updates]
+        S -->|No| R
+        T --> Q
+        R -->|Yes| L
+        R -->|No| U{Epic retrospective with MCP data?}
+        U -->|Yes| V[po: epic retrospective + MCP insights]
+        U -->|No| W[Project Complete - 100% via MCP]
+        V --> W
+
+        B -.-> B1[Optional: brainstorming]
+        B -.-> B2[Optional: market research]
+        D -.-> D1[Optional: user research]
+        E -.-> E1[Optional: technical research]
+
+        style W fill:#90EE90
+        style K fill:#ADD8E6
+        style L fill:#ADD8E6
+        style O fill:#ADD8E6
+        style D3 fill:#E6E6FA
+        style D4 fill:#E6E6FA
+        style B fill:#FFE4B5
+        style C fill:#FFE4B5
+        style D fill:#FFE4B5
+        style E fill:#FFE4B5
+        style N fill:#F0E68C
+        style Q fill:#F0E68C
+        style V fill:#F0E68C
+        
+        %% MCP-specific styling
+        style A fill:#E0F2F1,stroke:#00695C
+        style W fill:#E8F5E8,stroke:#2E7D32
+    ```
+
+  decision_guidance:
+    when_to_use:
+      - Building production-ready applications with structured tracking
+      - Multiple team members needing real-time progress visibility
+      - Complex feature requirements with cross-references
+      - Need comprehensive documentation with audit trails
+      - Long-term maintenance with change tracking
+      - Enterprise applications requiring compliance documentation
+      - Projects where progress monitoring is critical
+
+  handoff_prompts:
+    analyst_to_pm: "Project brief complete and stored in MCP. Access via bmad://documents/project-brief/latest. Save as docs/project-brief.md, then create PRD using *create-prd-mcp command."
+    pm_to_ux: "PRD ready and accessible via bmad://project/prd. Save as docs/prd.md, then create UI/UX spec with MCP cross-references."
+    ux_to_architect: "UI/UX spec complete with MCP integration. Save as docs/front-end-spec.md, then create architecture with MCP validation."
+    architect_review: "Architecture complete and accessible via bmad://project/architecture. Save as docs/fullstack-architecture.md. Check if PRD updates needed via MCP tools."
+    architect_to_pm: "Please update PRD using MCP tools for the suggested changes, then re-export complete prd.md to docs/."
+    updated_to_po: "All documents ready in docs/ and MCP database. Please validate using MCP cross-references for consistency."
+    po_issues: "PO found issues with [document]. Use MCP tools to fix and update. All agents can access latest versions via MCP resources."
+    complete: "All planning artifacts validated and stored in both docs/ and MCP database. Begin development with MCP-enhanced tracking."

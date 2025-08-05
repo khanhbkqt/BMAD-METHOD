@@ -70,258 +70,476 @@ core_principles:
 commands:
   - help: Show numbered list of the following commands to allow selection
   - run-tests: Execute linting and tests
+  - validate-story: Execute task validate-next-story-mcp.md (MCP enhanced validation)
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
-develop-story:
-  order-of-execution: Read (first or next) task→Implement Task and its subtasks→Write tests→Execute validations→Only if ALL pass, then update the task checkbox with [x]→Update story section File List to ensure it lists and new or modified or deleted source file→repeat order-of-execution until complete
-  story-file-updates-ONLY:
-    - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
-    - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status
-    - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
-  blocking: 'HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression'
-  ready-for-review: Code matches requirements + All validations pass + Follows standards + File List complete
-  completion: 'All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON''T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure File List is Complete→run the task execute-checklist for the checklist story-dod-checklist→set story status: ''Ready for Review''→HALT'
+  - develop-story:
+      - order-of-execution: Read (first or next) task→Implement Task and its subtasks→Write tests→Execute validations→Only if ALL pass, then update the task checkbox with [x]→Update story section File List to ensure it lists and new or modified or deleted source file→repeat order-of-execution until complete
+      - story-file-updates-ONLY:
+          - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
+          - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status
+          - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
+      - blocking: 'HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression'
+      - ready-for-review: Code matches requirements + All validations pass + Follows standards + File List complete
+      - completion: 'All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON''T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure File List is Complete→run the task execute-checklist for the checklist story-dod-checklist→set story status: ''Ready for Review''→HALT'
+      - mcp-enhanced-workflow: PREFERRED WORKFLOW - Use bmad_update_task_status to track progress, bmad_query_tasks to check dependencies, update story status in database upon completion. Falls back to file-based only if MCP unavailable.
+      - mcp-first-principle: Always attempt MCP tools first. Use file operations only as emergency fallback when MCP server unreachable.
 dependencies:
   tasks:
-    - execute-checklist.md
-    - validate-next-story.md
+    - execute-checklist-mcp.md
+    - validate-next-story-mcp.md
   checklists:
     - story-dod-checklist.md
 ```
 ==================== END: .bmad-core/agents/dev.md ====================
 
-==================== START: .bmad-core/tasks/execute-checklist.md ====================
-# Checklist Validation Task
-
-This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
-
-## Available Checklists
-
-If the user asks or does not specify a specific checklist, list the checklists available to the agent persona. If the task is being run not with a specific agent, tell the user to check the .bmad-core/checklists folder to select the appropriate one to run.
-
-## Instructions
-
-1. **Initial Assessment**
-
-   - If user or the task being run provides a checklist name:
-     - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
-     - If multiple matches found, ask user to clarify
-     - Load the appropriate checklist from .bmad-core/checklists/
-   - If no checklist specified:
-     - Ask the user which checklist they want to use
-     - Present the available options from the files in the checklists folder
-   - Confirm if they want to work through the checklist:
-     - Section by section (interactive mode - very time consuming)
-     - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
-
-2. **Document and Artifact Gathering**
-
-   - Each checklist will specify its required documents/artifacts at the beginning
-   - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
-
-3. **Checklist Processing**
-
-   If in interactive mode:
-
-   - Work through each section of the checklist one at a time
-   - For each section:
-     - Review all items in the section following instructions for that section embedded in the checklist
-     - Check each item against the relevant documentation or artifacts as appropriate
-     - Present summary of findings for that section, highlighting warnings, errors and non applicable items (rationale for non-applicability).
-     - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
-
-   If in YOLO mode:
-
-   - Process all sections at once
-   - Create a comprehensive report of all findings
-   - Present the complete analysis to the user
-
-4. **Validation Approach**
-
-   For each checklist item:
-
-   - Read and understand the requirement
-   - Look for evidence in the documentation that satisfies the requirement
-   - Consider both explicit mentions and implicit coverage
-   - Aside from this, follow all checklist llm instructions
-   - Mark items as:
-     - ✅ PASS: Requirement clearly met
-     - ❌ FAIL: Requirement not met or insufficient coverage
-     - ⚠️ PARTIAL: Some aspects covered but needs improvement
-     - N/A: Not applicable to this case
-
-5. **Section Analysis**
-
-   For each section:
-
-   - think step by step to calculate pass rate
-   - Identify common themes in failed items
-   - Provide specific recommendations for improvement
-   - In interactive mode, discuss findings with user
-   - Document any user decisions or explanations
-
-6. **Final Report**
-
-   Prepare a summary that includes:
-
-   - Overall checklist completion status
-   - Pass rates by section
-   - List of failed items with context
-   - Specific recommendations for improvement
-   - Any sections or items marked as N/A with justification
-
-## Checklist Execution Methodology
-
-Each checklist now contains embedded LLM prompts and instructions that will:
-
-1. **Guide thorough thinking** - Prompts ensure deep analysis of each section
-2. **Request specific artifacts** - Clear instructions on what documents/access is needed
-3. **Provide contextual guidance** - Section-specific prompts for better validation
-4. **Generate comprehensive reports** - Final summary with detailed findings
-
-The LLM will:
-
-- Execute the complete checklist validation
-- Present a final report with pass/fail rates and key findings
-- Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-core/tasks/execute-checklist.md ====================
-
-==================== START: .bmad-core/tasks/validate-next-story.md ====================
-# Validate Next Story Task
+==================== START: .bmad-core/tasks/execute-checklist-mcp.md ====================
+# Execute Checklist Task (MCP Enhanced)
 
 ## Purpose
 
-To comprehensively validate a story draft before implementation begins, ensuring it is complete, accurate, and provides sufficient context for successful development. This task identifies issues and gaps that need to be addressed, preventing hallucinations and ensuring implementation readiness.
+MCP-enhanced checklist execution with real-time validation, progress tracking, and automated artifact linking. This version uses MCP tools to validate checklist items against current project state and maintain audit trails of checklist completion.
+
+## SEQUENTIAL Task Execution
+
+### 0. MCP Availability and Checklist Preparation
+
+**MCP Availability Check:**
+- Verify MCP tools are available for checklist validation
+- If MCP unavailable, fall back to manual checklist execution with warning
+- If MCP available, use enhanced workflow with real-time validation
+
+**Checklist Context Analysis:**
+1. Use `bmad_get_project_progress` to understand current project state
+2. Use `bmad_get_current_sprint` to get sprint context for relevant checklists
+3. Use `bmad_query_tasks` and `bmad_query_epics` for entity-specific checklists
+
+### 1. Checklist Initialization and Context Setup
+
+**Checklist Selection and Loading:**
+
+Interactive checklist selection:
+```
+Available Checklists:
+1. story-draft-checklist.md - Story creation validation
+2. story-dod-checklist.md - Story definition of done
+3. pm-checklist.md - Product management validation
+4. architect-checklist.md - Architecture review
+5. po-master-checklist.md - Product owner validation
+6. change-checklist.md - Change management process
+7. sprint-completion-checklist.md - Sprint retrospective
+
+Select checklist number: 
+Entity Context (if applicable): [epic/story/sprint ID]
+```
+
+**Context-Aware Checklist Enhancement:**
+
+Based on selected checklist and entity:
+1. **Story Checklists:** Use `bmad_query_tasks` to get story details for validation
+2. **Epic Checklists:** Use `bmad_query_epics` to get epic context
+3. **Sprint Checklists:** Use `bmad_get_current_sprint` for sprint-specific validation
+4. **Project Checklists:** Use `bmad_get_project_progress` for overall context
+
+### 2. MCP-Enhanced Checklist Execution
+
+**Real-Time Validation Checklist Processing:**
+
+For each checklist item:
+
+1. **Item Context Analysis:**
+   - Parse checklist item requirements
+   - Identify MCP queries needed for validation
+   - Gather relevant project data automatically
+
+2. **Automated Validation (Where Possible):**
+   ```
+   Checklist Item: "${checklist_item_text}"
+   
+   MCP Validation Status:
+   - Data Retrieved: ✅/❌
+   - Validation Result: ✅/❌/🔍 (needs review)
+   - Evidence: ${mcp_data_summary}
+   ```
+
+3. **Interactive Validation (Where Required):**
+   ```
+   Checklist Item: "${checklist_item_text}"
+   
+   Current Project State: ${relevant_mcp_data}
+   
+   Manual Validation Required:
+   - Review the above data
+   - Confirm compliance: [Y/N]
+   - Notes (if needed): ${user_notes}
+   ```
+
+4. **Progress Tracking:**
+   - Track completion status for each item
+   - Maintain validation evidence from MCP data
+   - Record any issues or blockers identified
+
+### 3. Checklist Validation Categories
+
+**Automated MCP Validations:**
+
+1. **Data Existence Checks:**
+   - Story exists in system: `bmad_query_tasks`
+   - Epic exists and has stories: `bmad_query_epics`
+   - Sprint is active: `bmad_get_current_sprint`
+   - Documents exist: Document queries
+
+2. **Data Completeness Checks:**
+   - Story has description: Validate via task query
+   - Epic has priority set: Validate via epic query
+   - Sprint has goal defined: Validate via sprint query
+   - Required fields populated: Field-specific validation
+
+3. **Relationship Validations:**
+   - Story assigned to epic: Cross-reference validation
+   - Story assigned to sprint: Sprint assignment check
+   - Document links exist: Link validation queries
+   - Dependencies properly set: Dependency validation
+
+**Interactive MCP-Assisted Validations:**
+
+1. **Quality Assessments:**
+   - Story acceptance criteria quality (show current criteria from MCP)
+   - Epic scope appropriateness (show epic details from MCP)
+   - Sprint goal achievability (show sprint progress from MCP)
+
+2. **Alignment Checks:**
+   - Story aligns with epic goals (show both for comparison)
+   - Epic aligns with project objectives (show project context)
+   - Sprint scope matches capacity (show current sprint data)
+
+### 4. Checklist Results and Documentation
+
+**MCP-Enhanced Results Summary:**
+
+1. **Checklist Completion Report:**
+   ```markdown
+   # Checklist Execution Report - ${checklist_name}
+   
+   ## Execution Context
+   - **Date**: ${execution_date}
+   - **Entity**: ${entity_type} ${entity_id}
+   - **Executor**: ${agent_name}
+   - **MCP Data Used**: ${mcp_queries_executed}
+   
+   ## Results Summary
+   - **Total Items**: ${total_items}
+   - **Passed**: ${passed_count} ✅
+   - **Failed**: ${failed_count} ❌
+   - **Needs Attention**: ${attention_count} 🔍
+   - **Not Applicable**: ${na_count} ⚪
+   
+   ## Detailed Results
+   ${item_by_item_results_with_mcp_evidence}
+   
+   ## Action Items
+   ${identified_action_items}
+   
+   ## MCP Data Evidence
+   ${relevant_mcp_data_snapshots}
+   ```
+
+2. **Store Checklist Results:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "checklist-results",
+     "title": "Checklist Results - ${checklist_name} - ${date}",
+     "content": "<checklist_report_markdown>",
+     "metadata": {
+       "checklist_type": "<checklist_name>",
+       "entity_type": "<entity_type>",
+       "entity_id": "<entity_id>",
+       "pass_rate": <percentage>,
+       "execution_date": "<date>"
+     }
+   }
+   ```
+
+### 5. Action Item Tracking and Follow-up
+
+**MCP-Enhanced Action Item Management:**
+
+1. **Action Item Creation:**
+   For each failed or attention-required checklist item:
+   ```json
+   {
+     "epic_num": <relevant_epic>,
+     "title": "Checklist Action: ${item_description}",
+     "description": "Address checklist item: ${item_text}\n\nEvidence: ${mcp_evidence}\n\nRequired Action: ${action_description}",
+     "assignee": "${responsible_agent}",
+     "priority": "HIGH"
+   }
+   ```
+
+2. **Link Action Items to Original Entity:**
+   ```json
+   {
+     "entity_type": "task",
+     "entity_id": "<action_item_id>",
+     "document_id": "<checklist_results_doc_id>",
+     "link_purpose": "checklist-followup"
+   }
+   ```
+
+### 6. Checklist Integration and Continuous Improvement
+
+**Checklist Pattern Analysis:**
+
+1. **Common Issue Identification:**
+   - Analyze historical checklist results
+   - Identify recurring failure patterns
+   - Suggest process improvements
+
+2. **Checklist Effectiveness Tracking:**
+   - Track checklist completion rates over time
+   - Monitor action item resolution rates
+   - Identify checklist items that need refinement
+
+**Integration with Development Flow:**
+
+1. **Pre-Development Checklists:**
+   - Validate story readiness before development
+   - Ensure epic completeness before story creation
+   - Confirm sprint readiness before sprint start
+
+2. **Post-Development Checklists:**
+   - Validate story completion before marking done
+   - Ensure epic closure criteria met
+   - Confirm sprint success criteria achieved
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_query_tasks` - Validate story-related checklist items
+- `bmad_query_epics` - Validate epic-related checklist items
+- `bmad_get_current_sprint` - Validate sprint-related checklist items
+- `bmad_get_project_progress` - Validate project-level checklist items
+- `bmad_create_document` - Store checklist results and reports
+- `bmad_create_story` - Create action items for failed checklist items
+- `bmad_link_entity_to_document` - Link results to relevant entities
+
+### Enhanced Resources:
+- `bmad://checklists/history` - Historical checklist execution data
+- `bmad://checklists/patterns` - Common failure pattern analysis
+- `bmad://project/quality-metrics` - Quality metrics derived from checklists
+
+## Critical Success Factors
+
+1. **Real-Time Validation:** Use MCP data for objective checklist validation
+2. **Evidence-Based Results:** Maintain clear evidence trail from MCP queries
+3. **Action Item Creation:** Convert failures into trackable action items
+4. **Continuous Improvement:** Analyze patterns for process enhancement
+5. **Integration:** Embed checklists into natural development workflow
+
+This MCP-enhanced approach ensures checklists are validated against real project data, results are properly documented, and follow-up actions are tracked through the project management system.
+==================== END: .bmad-core/tasks/execute-checklist-mcp.md ====================
+
+==================== START: .bmad-core/tasks/validate-next-story-mcp.md ====================
+# Validate Next Story Task (MCP Enhanced)
+
+## Purpose
+
+Enhanced story validation using MCP tools for data access and cross-referencing. This task validates story completeness and readiness using structured data from the MCP server while providing fallback to file-based validation.
 
 ## SEQUENTIAL Task Execution (Do not proceed until current Task is complete)
 
-### 0. Load Core Configuration and Inputs
+### 0. Check MCP Availability and Load Context
 
-- Load `.bmad-core/core-config.yaml`
-- If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story validation."
-- Extract key configurations: `devStoryLocation`, `prd.*`, `architecture.*`
-- Identify and load the following inputs:
-  - **Story file**: The drafted story to validate (provided by user or discovered in `devStoryLocation`)
-  - **Parent epic**: The epic containing this story's requirements
-  - **Architecture documents**: Based on configuration (sharded or monolithic)
-  - **Story template**: `bmad-core/templates/story-tmpl.md` for completeness validation
+**MCP Availability Check:**
+Ask the user if they have MCP tools available. If they respond yes, use MCP workflow. If no, inform user that MCP server is required for validation.
 
-### 1. Template Completeness Validation
+**MCP-Enhanced Context Loading:**
+1. Use `bmad://project/info` resource to get project configuration
+2. Use `bmad_query_tasks` to identify the story to validate
+3. Access story details from MCP database if available
 
-- Load `bmad-core/templates/story-tmpl.md` and extract all section headings from the template
-- **Missing sections check**: Compare story sections against template sections to verify all required sections are present
-- **Placeholder validation**: Ensure no template placeholders remain unfilled (e.g., `{{EpicNum}}`, `{{role}}`, `_TBD_`)
-- **Agent section verification**: Confirm all sections from template exist for future agent use
-- **Structure compliance**: Verify story follows template structure and formatting
+### 1. Story Identification and Loading
 
-### 2. File Structure and Source Tree Validation
+**MCP-Enhanced Approach:**
 
-- **File paths clarity**: Are new/existing files to be created/modified clearly specified?
-- **Source tree relevance**: Is relevant project structure included in Dev Notes?
-- **Directory structure**: Are new directories/components properly located according to project structure?
-- **File creation sequence**: Do tasks specify where files should be created in logical order?
-- **Path accuracy**: Are file paths consistent with project structure from architecture docs?
+1. **Story Selection:** If story ID not provided, use `bmad_query_tasks` to list recent stories:
+   - Query: `{"status": "TODO", "assignee": "dev"}` - Get dev-assigned stories
+   - Present list to user for selection
 
-### 3. UI/Frontend Completeness Validation (if applicable)
+2. **Story Details:** Load story from MCP database:
+   - Get complete story details including title, description, tasks
+   - Access any metadata and creation context
+   - Check story status and assignment
 
-- **Component specifications**: Are UI components sufficiently detailed for implementation?
-- **Styling/design guidance**: Is visual implementation guidance clear?
-- **User interaction flows**: Are UX patterns and behaviors specified?
-- **Responsive/accessibility**: Are these considerations addressed if required?
-- **Integration points**: Are frontend-backend integration points clear?
+**Example Queries:**
+- `bmad_query_tasks`: `{"id": "<story_id>"}` - Get specific story details
+- `bmad_query_tasks`: `{"epic_num": 1, "story_num": 2}` - Get story by epic/story number
 
-### 4. Acceptance Criteria Satisfaction Assessment
+### 2. Template Completeness Validation
 
-- **AC coverage**: Will all acceptance criteria be satisfied by the listed tasks?
-- **AC testability**: Are acceptance criteria measurable and verifiable?
-- **Missing scenarios**: Are edge cases or error conditions covered?
-- **Success definition**: Is "done" clearly defined for each AC?
-- **Task-AC mapping**: Are tasks properly linked to specific acceptance criteria?
+**MCP-Enhanced Validation:**
 
-### 5. Validation and Testing Instructions Review
+1. **Template Access:** Load story template from file system (template still file-based)
+2. **Story Structure:** Validate story contains all required sections
+3. **Database Consistency:** Verify story data in database matches expected structure
 
-- **Test approach clarity**: Are testing methods clearly specified?
-- **Test scenarios**: Are key test cases identified?
-- **Validation steps**: Are acceptance criteria validation steps clear?
-- **Testing tools/frameworks**: Are required testing tools specified?
-- **Test data requirements**: Are test data needs identified?
+**Validation Points:**
+- Check story has title, description, acceptance criteria
+- Verify tasks/subtasks are properly structured  
+- Ensure metadata fields are populated correctly
+- Validate status tracking fields exist
 
-### 6. Security Considerations Assessment (if applicable)
+### 3. Context and Dependency Validation  
 
-- **Security requirements**: Are security needs identified and addressed?
-- **Authentication/authorization**: Are access controls specified?
-- **Data protection**: Are sensitive data handling requirements clear?
-- **Vulnerability prevention**: Are common security issues addressed?
-- **Compliance requirements**: Are regulatory/compliance needs addressed?
+**MCP-Enhanced Context Access:**
 
-### 7. Tasks/Subtasks Sequence Validation
+1. **Epic Context:** Use `bmad://epics/<epic_num>/tasks` to get epic context:
+   - Verify story fits within epic scope
+   - Check dependencies on other stories in epic
+   - Validate epic requirements coverage
 
-- **Logical order**: Do tasks follow proper implementation sequence?
-- **Dependencies**: Are task dependencies clear and correct?
-- **Granularity**: Are tasks appropriately sized and actionable?
-- **Completeness**: Do tasks cover all requirements and acceptance criteria?
-- **Blocking issues**: Are there any tasks that would block others?
+2. **Architecture Alignment:** Use `bmad://project/architecture` resource:
+   - Verify technical approaches align with architecture
+   - Check component and file path specifications
+   - Validate integration patterns
 
-### 8. Anti-Hallucination Verification
+3. **PRD Alignment:** Use `bmad://project/prd` resource:
+   - Ensure story requirements match PRD specifications
+   - Verify functional requirements coverage
+   - Check business value alignment
 
-- **Source verification**: Every technical claim must be traceable to source documents
-- **Architecture alignment**: Dev Notes content matches architecture specifications
-- **No invented details**: Flag any technical decisions not supported by source documents
-- **Reference accuracy**: Verify all source references are correct and accessible
-- **Fact checking**: Cross-reference claims against epic and architecture documents
+**Example Resource Access:**
+- Access `bmad://epics/1/tasks` - Get all tasks in Epic 1 for dependency analysis
+- Access `bmad://project/architecture` - Validate technical specifications
+- Access `bmad://project/prd` - Cross-reference business requirements
 
-### 9. Dev Agent Implementation Readiness
+### 4. Implementation Readiness Assessment
 
-- **Self-contained context**: Can the story be implemented without reading external docs?
-- **Clear instructions**: Are implementation steps unambiguous?
-- **Complete technical context**: Are all required technical details present in Dev Notes?
-- **Missing information**: Identify any critical information gaps
-- **Actionability**: Are all tasks actionable by a development agent?
+**MCP-Enhanced Readiness Checks:**
 
-### 10. Generate Validation Report
+1. **Previous Story Analysis:** Use `bmad_query_tasks` to check story sequence:
+   - Query: `{"epic_num": <epic>, "status": "DONE"}` - Get completed stories
+   - Verify dependencies are satisfied
+   - Check if prerequisite stories are complete
 
-Provide a structured validation report including:
+2. **Resource Availability:** Check if all referenced resources exist:
+   - Verify architecture documents are accessible
+   - Confirm PRD sections are available
+   - Validate template and configuration files
+
+3. **Task Granularity:** Analyze story tasks for implementability:
+   - Check task clarity and actionability
+   - Verify technical specifications completeness
+   - Assess testing requirements coverage
+
+### 5. Anti-Hallucination Verification
+
+**MCP-Enhanced Source Verification:**
+
+1. **Architecture Cross-Reference:** Compare story details against architecture:
+   - Use `bmad://project/architecture` to verify technical claims
+   - Check file paths and component specifications
+   - Validate API and database references
+
+2. **PRD Requirements Mapping:** Verify requirements traceability:
+   - Use `bmad://project/prd` to confirm requirement coverage
+   - Check acceptance criteria alignment
+   - Validate business logic specifications
+
+3. **Epic Consistency:** Use epic tasks to check consistency:
+   - Compare similar stories for pattern consistency
+   - Verify naming conventions and approaches
+   - Check for contradictions with previous implementations
+
+### 6. Quality and Completeness Assessment
+
+**MCP-Enhanced Quality Checks:**
+
+1. **Progress Context:** Use `bmad://project/progress` to assess project context:
+   - Check overall project completion status
+   - Understand current velocity and capacity
+   - Assess story complexity relative to progress
+
+2. **Epic Progress:** Use `bmad://epics/<epic_num>/progress`:
+   - Verify story fits epic timeline
+   - Check epic completion percentage
+   - Assess story priority and sequencing
+
+### 7. Generate Validation Report
+
+**MCP-Enhanced Reporting:**
+
+Provide a structured validation report with MCP data integration:
+
+#### MCP Data Summary
+- **Story ID**: Database ID and epic.story number
+- **Creation Date**: When story was created
+- **Current Status**: TODO/IN_PROGRESS/etc.
+- **Epic Context**: Progress and related stories
+- **Project Context**: Overall progress percentage
 
 #### Template Compliance Issues
-
-- Missing sections from story template
-- Unfilled placeholders or template variables
-- Structural formatting issues
+- Missing required fields in database record
+- Incomplete story structure or metadata
+- Missing task definitions or acceptance criteria
 
 #### Critical Issues (Must Fix - Story Blocked)
-
-- Missing essential information for implementation
-- Inaccurate or unverifiable technical claims
-- Incomplete acceptance criteria coverage
-- Missing required sections
+- **Architecture Misalignment**: Technical details contradicting architecture docs
+- **Missing Dependencies**: Required previous stories not completed
+- **Resource Unavailability**: Referenced documents or configurations missing
+- **Incomplete Requirements**: Essential details missing from PRD cross-reference
 
 #### Should-Fix Issues (Important Quality Improvements)
-
-- Unclear implementation guidance
-- Missing security considerations
-- Task sequencing problems
-- Incomplete testing instructions
-
-#### Nice-to-Have Improvements (Optional Enhancements)
-
-- Additional context that would help implementation
-- Clarifications that would improve efficiency
-- Documentation improvements
+- **Context Gaps**: Missing technical context from architecture
+- **Testing Inadequacy**: Insufficient test specification
+- **Task Sequencing**: Suboptimal implementation order
+- **Documentation Gaps**: Missing references or explanations
 
 #### Anti-Hallucination Findings
+- **Unverified Claims**: Technical details not found in architecture docs
+- **PRD Misalignment**: Requirements not matching PRD specifications  
+- **Inconsistent Patterns**: Approaches differing from similar completed stories
+- **Missing Source References**: Claims without traceable sources
 
-- Unverifiable technical claims
-- Missing source references
-- Inconsistencies with architecture documents
-- Invented libraries, patterns, or standards
+#### MCP Data Insights
+- **Epic Progress**: X% complete, Y stories remaining
+- **Project Velocity**: Average completion time based on historical data
+- **Dependency Status**: All prerequisite stories completed/blocked
+- **Resource Availability**: All required documents accessible
 
 #### Final Assessment
+- **GO/NO-GO**: Implementation readiness decision
+- **Implementation Readiness Score**: 1-10 based on MCP data analysis
+- **Confidence Level**: High/Medium/Low with supporting MCP evidence
+- **Recommended Actions**: Specific fixes based on MCP data analysis
 
-- **GO**: Story is ready for implementation
-- **NO-GO**: Story requires fixes before implementation
-- **Implementation Readiness Score**: 1-10 scale
-- **Confidence Level**: High/Medium/Low for successful implementation
-==================== END: .bmad-core/tasks/validate-next-story.md ====================
+## Enhanced Benefits
+
+### Real-Time Context
+- **Live Progress**: Access current project and epic status
+- **Dependency Tracking**: Real-time status of prerequisite stories
+- **Resource Validation**: Immediate verification of document availability
+
+### Data-Driven Insights  
+- **Pattern Analysis**: Compare against similar completed stories
+- **Velocity Prediction**: Estimate implementation effort based on history
+- **Quality Metrics**: Track validation patterns and success rates
+
+### Comprehensive Cross-Reference
+- **Architecture Alignment**: Automated cross-checking with architecture docs
+- **Requirements Traceability**: Direct PRD requirement mapping
+- **Epic Consistency**: Validation against epic context and progress
+
+## MCP Requirements
+
+If MCP tools are unavailable:
+1. Display error: "MCP tools required for story validation"
+2. Inform user that MCP server setup is needed for proper validation
+3. Provide instructions for enabling MCP server
+4. Do not proceed without MCP tools
+
+This ensures comprehensive story validation through the MCP database.
+==================== END: .bmad-core/tasks/validate-next-story-mcp.md ====================
 
 ==================== START: .bmad-core/checklists/story-dod-checklist.md ====================
 # Story Definition of Done (DoD) Checklist

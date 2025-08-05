@@ -38,14 +38,16 @@ program
 program
   .command('install')
   .description('Install BMad Method agents and tools')
-  .option('-f, --full', 'Install complete BMad Method')
+  .option('-f, --full', 'Install complete BMad Method with MCP server and web UI')
+  .option('-m, --mcp', 'Install BMad Method with MCP server (no web UI)')
+  .option('-w, --web-ui-only', 'Install only web UI component')
   .option('-x, --expansion-only', 'Install only expansion packs (no bmad-core)')
   .option('-d, --directory <path>', 'Installation directory')
   .option('-i, --ide <ide...>', 'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, cline, gemini, github-copilot, other)')
   .option('-e, --expansion-packs <packs...>', 'Install specific expansion packs (can specify multiple)')
   .action(async (options) => {
     try {
-      if (!options.full && !options.expansionOnly) {
+      if (!options.full && !options.expansionOnly && !options.mcp && !options.webUiOnly) {
         // Interactive mode
         const answers = await promptInstallation();
         if (!answers._alreadyInstalled) {
@@ -56,6 +58,8 @@ program
         // Direct mode
         let installType = 'full';
         if (options.expansionOnly) installType = 'expansion-only';
+        if (options.mcp) installType = 'mcp';
+        if (options.webUiOnly) installType = 'web-ui-only';
 
         const config = {
           installType,
@@ -194,6 +198,19 @@ async function promptInstallation() {
     checked: true
   });
   
+  // Add MCP + Web UI options
+  choices.push({
+    name: 'BMad Core + MCP Server (recommended - no web UI)',
+    value: 'mcp',
+    checked: false
+  });
+  
+  choices.push({
+    name: 'Web UI Only (requires existing MCP server)',
+    value: 'web-ui-only',
+    checked: false
+  });
+  
   // Add expansion pack options
   for (const pack of availableExpansionPacks) {
     const existing = existingExpansionPacks[pack.id];
@@ -234,8 +251,16 @@ async function promptInstallation() {
   ]);
   
   // Process selections
-  answers.installType = selectedItems.includes('bmad-core') ? 'full' : 'expansion-only';
-  answers.expansionPacks = selectedItems.filter(item => item !== 'bmad-core');
+  if (selectedItems.includes('bmad-core')) {
+    answers.installType = 'full';
+  } else if (selectedItems.includes('mcp')) {
+    answers.installType = 'mcp';
+  } else if (selectedItems.includes('web-ui-only')) {
+    answers.installType = 'web-ui-only';
+  } else {
+    answers.installType = 'expansion-only';
+  }
+  answers.expansionPacks = selectedItems.filter(item => !['bmad-core', 'mcp', 'web-ui-only'].includes(item));
 
   // Ask sharding questions if installing BMad core
   if (selectedItems.includes('bmad-core')) {

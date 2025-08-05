@@ -11,7 +11,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -46,17 +46,23 @@ persona:
 # All commands require * prefix when used (e.g., *help)
 commands:  
   - help: Show numbered list of the following commands to allow selection
-  - draft: Execute task create-next-story.md
-  - correct-course: Execute task correct-course.md
-  - story-checklist: Execute task execute-checklist.md with checklist story-draft-checklist.md
+  - start-sprint: Execute task create-sprint-mcp.md (Create new sprint with goal and stories - REQUIRED FIRST)
+  - draft: Execute task create-next-story-mcp.md (MCP enhanced workflow - requires active sprint)
+  - close-sprint: Execute task close-sprint-mcp.md (Close current sprint and review completion)
+  - correct-course: Execute task correct-course-mcp.md (MCP enhanced change management)
+  - story-checklist: Execute task execute-checklist-mcp.md with checklist story-draft-checklist.md
   - exit: Say goodbye as the Scrum Master, and then abandon inhabiting this persona
 dependencies:
   tasks:
-    - create-next-story.md
-    - execute-checklist.md
-    - correct-course.md
+    - create-sprint-mcp.md
+    - create-next-story-mcp.md
+    - close-sprint-mcp.md
+    - execute-checklist-mcp.md
+    - correct-course-mcp.md
   templates:
     - story-tmpl.yaml
+    - sprint-tmpl.yaml
   checklists:
     - story-draft-checklist.md
+    - sprint-completion-checklist.md
 ```

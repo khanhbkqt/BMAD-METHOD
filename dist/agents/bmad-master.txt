@@ -71,7 +71,7 @@ commands:
   - task {task}: Execute task, if not found or none specified, ONLY list available dependencies/tasks listed below
   - create-doc {template}: execute task create-doc (no template = ONLY show available templates listed under dependencies/templates below)
   - doc-out: Output full document to current destination file
-  - document-project: execute the task document-project.md
+  - document-project: execute the task document-project-mcp.md
   - execute-checklist {checklist}: Run task execute-checklist (no checklist = ONLY show available checklists listed under dependencies/checklist below)
   - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - yolo: Toggle Yolo Mode
@@ -80,17 +80,17 @@ dependencies:
   tasks:
     - advanced-elicitation.md
     - facilitate-brainstorming-session.md
-    - brownfield-create-epic.md
-    - brownfield-create-story.md
-    - correct-course.md
-    - create-deep-research-prompt.md
-    - create-doc.md
-    - document-project.md
-    - create-next-story.md
-    - execute-checklist.md
+    - brownfield-create-epic-mcp.md
+    - brownfield-create-story-mcp.md
+    - correct-course-mcp.md
+    - create-deep-research-prompt-mcp.md
+    - create-doc-mcp.md
+    - document-project-mcp.md
+    - create-next-story-mcp.md
+    - execute-checklist-mcp.md
     - generate-ai-frontend-prompt.md
     - index-docs.md
-    - shard-doc.md
+    - shard-doc-mcp.md
   templates:
     - architecture-tmpl.yaml
     - brownfield-architecture-tmpl.yaml
@@ -384,12 +384,12 @@ Generate structured document with these sections:
 - Respect their process and timing
 ==================== END: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
 
-==================== START: .bmad-core/tasks/brownfield-create-epic.md ====================
-# Create Brownfield Epic Task
+==================== START: .bmad-core/tasks/brownfield-create-epic-mcp.md ====================
+# Create Brownfield Epic Task (MCP Enhanced)
 
 ## Purpose
 
-Create a single epic for smaller brownfield enhancements that don't require the full PRD and Architecture documentation process. This task is for isolated features or modifications that can be completed within a focused scope.
+Create a single epic for smaller brownfield enhancements using MCP tools for structured data management. This MCP-enhanced version provides real-time epic tracking, validation, and integration with existing project data.
 
 ## When to Use This Task
 
@@ -408,151 +408,261 @@ Create a single epic for smaller brownfield enhancements that don't require the 
 - Significant integration work is required
 - Risk assessment and mitigation planning is necessary
 
-## Instructions
+## SEQUENTIAL Task Execution
 
-### 1. Project Analysis (Required)
+### 0. MCP Availability and Project State Check
 
-Before creating the epic, gather essential information about the existing project:
+**MCP Availability Check:**
+- Verify MCP tools are available for the current project
+- If MCP unavailable, fall back to file-based operation with warning
+- If MCP available, use enhanced workflow with real-time data
 
-**Existing Project Context:**
+**Project State Analysis:**
+1. Use `bmad_get_project_progress` to understand current project state:
+   - Review existing epics and their completion status
+   - Identify available epic numbers for new epic
+   - Assess project capacity and priorities
 
-- [ ] Project purpose and current functionality understood
-- [ ] Existing technology stack identified
-- [ ] Current architecture patterns noted
-- [ ] Integration points with existing system identified
+2. Use `bmad_query_epics` to get existing epic context:
+   - Review naming patterns and conventions
+   - Understand current epic scope and focus areas
+   - Validate that new epic doesn't duplicate existing work
 
-**Enhancement Scope:**
+### 1. Project Analysis (MCP Enhanced)
 
-- [ ] Enhancement clearly defined and scoped
-- [ ] Impact on existing functionality assessed
-- [ ] Required integration points identified
-- [ ] Success criteria established
+**Existing Project Context Using MCP:**
 
-### 2. Epic Creation
+1. **Project Overview:** Use `bmad_get_project_progress` to gather:
+   - [ ] Project completion status and current focus
+   - [ ] Active sprints and their goals
+   - [ ] Recent epic completion patterns
 
-Create a focused epic following this structure:
+2. **Technology Stack Discovery:** Use `bmad_query_tasks` to identify:
+   - [ ] Current technology patterns from existing stories
+   - [ ] Integration points mentioned in completed tasks
+   - [ ] Development patterns and conventions
 
-#### Epic Title
+3. **Architecture Assessment:** Use existing documentation:
+   - [ ] Review linked architecture documents via MCP
+   - [ ] Identify current system boundaries and interfaces
+   - [ ] Note existing integration patterns
 
-{{Enhancement Name}} - Brownfield Enhancement
+**Enhancement Scope Definition:**
 
-#### Epic Goal
+Interactive elicitation for enhancement details:
 
-{{1-2 sentences describing what the epic will accomplish and why it adds value}}
+```
+Enhancement Definition:
+1. What specific functionality needs to be added or modified?
+2. How does this enhancement integrate with existing features?
+3. What existing components/services will be affected?
+4. What are the success criteria for this enhancement?
+```
 
-#### Epic Description
+### 2. Epic Creation via MCP Tools
 
-**Existing System Context:**
+**MCP-Enhanced Epic Creation:**
 
-- Current relevant functionality: {{brief description}}
-- Technology stack: {{relevant existing technologies}}
-- Integration points: {{where new work connects to existing system}}
+1. **Epic Number Selection:** Use `bmad_query_epics` to determine:
+   - Next available epic number
+   - Naming conventions to follow
+   - Epic numbering sequence
 
-**Enhancement Details:**
+2. **Epic Data Collection:**
 
-- What's being added/changed: {{clear description}}
-- How it integrates: {{integration approach}}
-- Success criteria: {{measurable outcomes}}
+Interactive epic definition:
 
-#### Stories
+```
+Epic Information Required:
+- Epic Number: [Next available from MCP query]
+- Epic Title: [Enhancement name] - Brownfield Enhancement
+- Description: [Detailed enhancement description]
+- Priority: [HIGH/MEDIUM/LOW based on business impact]
+- Estimated Stories: [1-3 stories for brownfield scope]
+```
 
-List 1-3 focused stories that complete the epic:
+3. **Create Epic via MCP:** Use `bmad_create_epic` tool:
+   ```json
+   {
+     "epic_num": <next_epic_number>,
+     "title": "<enhancement_name> - Brownfield Enhancement",
+     "description": "<detailed_description_with_scope>",
+     "priority": "<priority_level>",
+     "metadata": {
+       "type": "brownfield",
+       "estimated_stories": <story_count>,
+       "integration_complexity": "low",
+       "architectural_impact": "minimal"
+     }
+   }
+   ```
 
-1. **Story 1:** {{Story title and brief description}}
-2. **Story 2:** {{Story title and brief description}}
-3. **Story 3:** {{Story title and brief description}}
+4. **Verify Epic Creation:** Use `bmad_query_epics` to confirm:
+   - Epic was created with correct number and title
+   - Epic appears in project epic list
+   - Epic metadata is properly stored
 
-#### Compatibility Requirements
+### 3. Epic Documentation and Context
 
-- [ ] Existing APIs remain unchanged
-- [ ] Database schema changes are backward compatible
-- [ ] UI changes follow existing patterns
-- [ ] Performance impact is minimal
+**Enhanced Epic Documentation:**
 
-#### Risk Mitigation
+1. **Epic Context Document:** Create comprehensive epic documentation:
 
-- **Primary Risk:** {{main risk to existing system}}
-- **Mitigation:** {{how risk will be addressed}}
-- **Rollback Plan:** {{how to undo changes if needed}}
+```markdown
+# Epic ${epic_num}: ${epic_title}
 
-#### Definition of Done
+## Enhancement Overview
+${detailed_description}
 
-- [ ] All stories completed with acceptance criteria met
-- [ ] Existing functionality verified through testing
-- [ ] Integration points working correctly
-- [ ] Documentation updated appropriately
-- [ ] No regression in existing features
-
-### 3. Validation Checklist
-
-Before finalizing the epic, ensure:
-
-**Scope Validation:**
-
-- [ ] Epic can be completed in 1-3 stories maximum
-- [ ] No architectural documentation is required
-- [ ] Enhancement follows existing patterns
-- [ ] Integration complexity is manageable
-
-**Risk Assessment:**
-
-- [ ] Risk to existing system is low
-- [ ] Rollback plan is feasible
-- [ ] Testing approach covers existing functionality
-- [ ] Team has sufficient knowledge of integration points
-
-**Completeness Check:**
-
-- [ ] Epic goal is clear and achievable
-- [ ] Stories are properly scoped
-- [ ] Success criteria are measurable
-- [ ] Dependencies are identified
-
-### 4. Handoff to Story Manager
-
-Once the epic is validated, provide this handoff to the Story Manager:
-
----
-
-**Story Manager Handoff:**
-
-"Please develop detailed user stories for this brownfield epic. Key considerations:
-
-- This is an enhancement to an existing system running {{technology stack}}
-- Integration points: {{list key integration points}}
-- Existing patterns to follow: {{relevant existing patterns}}
-- Critical compatibility requirements: {{key requirements}}
-- Each story must include verification that existing functionality remains intact
-
-The epic should maintain system integrity while delivering {{epic goal}}."
-
----
+## Brownfield Context
+- **Existing System Integration**: ${integration_points}
+- **Technology Stack Alignment**: ${tech_stack_notes}
+- **Risk Assessment**: Low - isolated enhancement
+- **Estimated Complexity**: ${complexity_assessment}
 
 ## Success Criteria
+${success_criteria_list}
 
-The epic creation is successful when:
+## Estimated Story Breakdown
+${story_breakdown_estimate}
 
-1. Enhancement scope is clearly defined and appropriately sized
-2. Integration approach respects existing system architecture
-3. Risk to existing functionality is minimized
-4. Stories are logically sequenced for safe implementation
-5. Compatibility requirements are clearly specified
-6. Rollback plan is feasible and documented
+## Integration Requirements
+${integration_requirements}
 
-## Important Notes
+## Acceptance Criteria
+${epic_acceptance_criteria}
+```
 
-- This task is specifically for SMALL brownfield enhancements
-- If the scope grows beyond 3 stories, consider the full brownfield PRD process
-- Always prioritize existing system integrity over new functionality
-- When in doubt about scope or complexity, escalate to full brownfield planning
-==================== END: .bmad-core/tasks/brownfield-create-epic.md ====================
+2. **Store Epic Documentation:** Use `bmad_create_document` to save:
+   ```json
+   {
+     "type": "epic-specification",
+     "title": "Epic ${epic_num} Specification - ${epic_title}",
+     "content": "<epic_documentation_markdown>",
+     "metadata": {
+       "epic_num": <epic_number>,
+       "document_type": "brownfield-epic",
+       "created_by": "pm"
+     }
+   }
+   ```
 
-==================== START: .bmad-core/tasks/brownfield-create-story.md ====================
-# Create Brownfield Story Task
+3. **Link Epic to Documentation:** Use `bmad_link_entity_to_document`:
+   ```json
+   {
+     "entity_type": "epic",
+     "entity_id": "<epic_id>",
+     "document_id": "<document_id>",
+     "link_purpose": "specification"
+   }
+   ```
+
+### 4. Sprint Integration and Planning
+
+**Sprint-Aware Epic Planning:**
+
+1. **Current Sprint Assessment:** Use `bmad_get_current_sprint`:
+   - If active sprint exists: Assess if epic fits current sprint goals
+   - If no active sprint: Note that sprint creation may be needed
+   - If sprint full: Plan for next sprint inclusion
+
+2. **Epic Prioritization:** Based on current project state:
+   - Review other pending epics via `bmad_query_epics`
+   - Assess relative priority and urgency
+   - Determine optimal timing for epic execution
+
+3. **Story Planning Preparation:**
+   - Identify first story to be created from this epic
+   - Prepare story breakdown for upcoming story creation
+   - Set expectations for story complexity and dependencies
+
+### 5. Epic Validation and Handoff
+
+**Epic Validation:**
+
+1. **Epic Completeness Check:**
+   - [ ] Epic has clear scope and boundaries
+   - [ ] Integration points are identified
+   - [ ] Success criteria are measurable
+   - [ ] Story breakdown is realistic
+
+2. **Project Alignment Validation:**
+   - [ ] Epic aligns with project goals
+   - [ ] Epic doesn't conflict with existing work
+   - [ ] Epic scope is appropriate for brownfield approach
+   - [ ] Epic timeline fits project constraints
+
+**Handoff to Story Creation:**
+
+1. **Epic Summary Display:**
+   ```
+   ✅ BROWNFIELD EPIC CREATED SUCCESSFULLY
+   
+   Epic ${epic_num}: ${epic_title}
+   Priority: ${priority}
+   Estimated Stories: ${story_count}
+   Integration Complexity: Low
+   
+   Success Criteria:
+   ${success_criteria_summary}
+   ```
+
+2. **Next Steps Guidance:**
+   ```
+   Next Actions:
+   1. Use SM agent *draft-mcp command to create first story
+   2. Ensure active sprint exists for story assignment
+   3. Begin development with focused scope
+   4. Track epic progress via task board
+   ```
+
+### 6. Epic Progress Tracking Setup
+
+**MCP-Enhanced Tracking:**
+
+1. **Epic Metrics Definition:**
+   - Story completion rate within epic
+   - Epic goal achievement progress
+   - Integration milestone tracking
+   - Quality metrics for brownfield enhancement
+
+2. **Progress Monitoring Setup:**
+   - Epic appears in project progress reports
+   - Story creation filtered by epic number
+   - Epic completion tracking via MCP queries
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_create_epic` - Create epic with metadata and tracking
+- `bmad_query_epics` - Get existing epics and numbering
+- `bmad_get_project_progress` - Understand current project state
+- `bmad_create_document` - Store epic documentation
+- `bmad_link_entity_to_document` - Connect epic to its documentation
+- `bmad_get_current_sprint` - Check sprint context for planning
+
+### Enhanced Resources:
+- `bmad://project/epics` - All project epics and their status
+- `bmad://epics/<num>/progress` - Specific epic progress tracking
+- `bmad://epics/<num>/stories` - Stories associated with epic
+
+## Critical Success Factors
+
+1. **Clear Scope Definition:** Epic scope must be focused and achievable
+2. **Integration Awareness:** Understanding of existing system touchpoints
+3. **Risk Management:** Brownfield-appropriate risk assessment
+4. **Story Readiness:** Clear preparation for story creation process
+5. **Project Alignment:** Epic fits within overall project goals and timeline
+
+This MCP-enhanced approach ensures that brownfield epics are properly tracked, integrated with existing project data, and set up for successful story development and completion.
+==================== END: .bmad-core/tasks/brownfield-create-epic-mcp.md ====================
+
+==================== START: .bmad-core/tasks/brownfield-create-story-mcp.md ====================
+# Create Brownfield Story Task (MCP Enhanced)
 
 ## Purpose
 
-Create a single user story for very small brownfield enhancements that can be completed in one focused development session. This task is for minimal additions or bug fixes that require existing system integration awareness.
+Create a single user story for very small brownfield enhancements using MCP tools for real-time project integration. This MCP-enhanced version provides automated story numbering, sprint assignment, and existing system context awareness.
 
 ## When to Use This Task
 
@@ -564,7 +674,7 @@ Create a single user story for very small brownfield enhancements that can be co
 - Integration is straightforward with minimal risk
 - Change is isolated with clear boundaries
 
-**Use brownfield-create-epic when:**
+**Use brownfield-create-epic-mcp when:**
 
 - The enhancement requires 2-3 coordinated stories
 - Some design work is needed
@@ -576,1150 +686,1434 @@ Create a single user story for very small brownfield enhancements that can be co
 - Architectural planning is needed
 - Significant integration work is required
 
-## Instructions
-
-### 1. Quick Project Assessment
-
-Gather minimal but essential context about the existing project:
-
-**Current System Context:**
-
-- [ ] Relevant existing functionality identified
-- [ ] Technology stack for this area noted
-- [ ] Integration point(s) clearly understood
-- [ ] Existing patterns for similar work identified
-
-**Change Scope:**
-
-- [ ] Specific change clearly defined
-- [ ] Impact boundaries identified
-- [ ] Success criteria established
-
-### 2. Story Creation
-
-Create a single focused story following this structure:
-
-#### Story Title
-
-{{Specific Enhancement}} - Brownfield Addition
-
-#### User Story
-
-As a {{user type}},
-I want {{specific action/capability}},
-So that {{clear benefit/value}}.
-
-#### Story Context
-
-**Existing System Integration:**
-
-- Integrates with: {{existing component/system}}
-- Technology: {{relevant tech stack}}
-- Follows pattern: {{existing pattern to follow}}
-- Touch points: {{specific integration points}}
-
-#### Acceptance Criteria
-
-**Functional Requirements:**
-
-1. {{Primary functional requirement}}
-2. {{Secondary functional requirement (if any)}}
-3. {{Integration requirement}}
-
-**Integration Requirements:** 4. Existing {{relevant functionality}} continues to work unchanged 5. New functionality follows existing {{pattern}} pattern 6. Integration with {{system/component}} maintains current behavior
-
-**Quality Requirements:** 7. Change is covered by appropriate tests 8. Documentation is updated if needed 9. No regression in existing functionality verified
-
-#### Technical Notes
-
-- **Integration Approach:** {{how it connects to existing system}}
-- **Existing Pattern Reference:** {{link or description of pattern to follow}}
-- **Key Constraints:** {{any important limitations or requirements}}
-
-#### Definition of Done
-
-- [ ] Functional requirements met
-- [ ] Integration requirements verified
-- [ ] Existing functionality regression tested
-- [ ] Code follows existing patterns and standards
-- [ ] Tests pass (existing and new)
-- [ ] Documentation updated if applicable
-
-### 3. Risk and Compatibility Check
-
-**Minimal Risk Assessment:**
-
-- **Primary Risk:** {{main risk to existing system}}
-- **Mitigation:** {{simple mitigation approach}}
-- **Rollback:** {{how to undo if needed}}
-
-**Compatibility Verification:**
-
-- [ ] No breaking changes to existing APIs
-- [ ] Database changes (if any) are additive only
-- [ ] UI changes follow existing design patterns
-- [ ] Performance impact is negligible
-
-### 4. Validation Checklist
-
-Before finalizing the story, confirm:
-
-**Scope Validation:**
-
-- [ ] Story can be completed in one development session
-- [ ] Integration approach is straightforward
-- [ ] Follows existing patterns exactly
-- [ ] No design or architecture work required
-
-**Clarity Check:**
-
-- [ ] Story requirements are unambiguous
-- [ ] Integration points are clearly specified
-- [ ] Success criteria are testable
-- [ ] Rollback approach is simple
-
-## Success Criteria
-
-The story creation is successful when:
-
-1. Enhancement is clearly defined and appropriately scoped for single session
-2. Integration approach is straightforward and low-risk
-3. Existing system patterns are identified and will be followed
-4. Rollback plan is simple and feasible
-5. Acceptance criteria include existing functionality verification
-
-## Important Notes
-
-- This task is for VERY SMALL brownfield changes only
-- If complexity grows during analysis, escalate to brownfield-create-epic
-- Always prioritize existing system integrity
-- When in doubt about integration complexity, use brownfield-create-epic instead
-- Stories should take no more than 4 hours of focused development work
-==================== END: .bmad-core/tasks/brownfield-create-story.md ====================
-
-==================== START: .bmad-core/tasks/correct-course.md ====================
-# Correct Course Task
-
-## Purpose
-
-- Guide a structured response to a change trigger using the `.bmad-core/checklists/change-checklist`.
-- Analyze the impacts of the change on epics, project artifacts, and the MVP, guided by the checklist's structure.
-- Explore potential solutions (e.g., adjust scope, rollback elements, re-scope features) as prompted by the checklist.
-- Draft specific, actionable proposed updates to any affected project artifacts (e.g., epics, user stories, PRD sections, architecture document sections) based on the analysis.
-- Produce a consolidated "Sprint Change Proposal" document that contains the impact analysis and the clearly drafted proposed edits for user review and approval.
-- Ensure a clear handoff path if the nature of the changes necessitates fundamental replanning by other core agents (like PM or Architect).
-
-## Instructions
-
-### 1. Initial Setup & Mode Selection
-
-- **Acknowledge Task & Inputs:**
-  - Confirm with the user that the "Correct Course Task" (Change Navigation & Integration) is being initiated.
-  - Verify the change trigger and ensure you have the user's initial explanation of the issue and its perceived impact.
-  - Confirm access to all relevant project artifacts (e.g., PRD, Epics/Stories, Architecture Documents, UI/UX Specifications) and, critically, the `.bmad-core/checklists/change-checklist`.
-- **Establish Interaction Mode:**
-  - Ask the user their preferred interaction mode for this task:
-    - **"Incrementally (Default & Recommended):** Shall we work through the change-checklist section by section, discussing findings and collaboratively drafting proposed changes for each relevant part before moving to the next? This allows for detailed, step-by-step refinement."
-    - **"YOLO Mode (Batch Processing):** Or, would you prefer I conduct a more batched analysis based on the checklist and then present a consolidated set of findings and proposed changes for a broader review? This can be quicker for initial assessment but might require more extensive review of the combined proposals."
-  - Once the user chooses, confirm the selected mode and then inform the user: "We will now use the change-checklist to analyze the change and draft proposed updates. I will guide you through the checklist items based on our chosen interaction mode."
-
-### 2. Execute Checklist Analysis (Iteratively or Batched, per Interaction Mode)
-
-- Systematically work through Sections 1-4 of the change-checklist (typically covering Change Context, Epic/Story Impact Analysis, Artifact Conflict Resolution, and Path Evaluation/Recommendation).
-- For each checklist item or logical group of items (depending on interaction mode):
-  - Present the relevant prompt(s) or considerations from the checklist to the user.
-  - Request necessary information and actively analyze the relevant project artifacts (PRD, epics, architecture documents, story history, etc.) to assess the impact.
-  - Discuss your findings for each item with the user.
-  - Record the status of each checklist item (e.g., `[x] Addressed`, `[N/A]`, `[!] Further Action Needed`) and any pertinent notes or decisions.
-  - Collaboratively agree on the "Recommended Path Forward" as prompted by Section 4 of the checklist.
-
-### 3. Draft Proposed Changes (Iteratively or Batched)
-
-- Based on the completed checklist analysis (Sections 1-4) and the agreed "Recommended Path Forward" (excluding scenarios requiring fundamental replans that would necessitate immediate handoff to PM/Architect):
-  - Identify the specific project artifacts that require updates (e.g., specific epics, user stories, PRD sections, architecture document components, diagrams).
-  - **Draft the proposed changes directly and explicitly for each identified artifact.** Examples include:
-    - Revising user story text, acceptance criteria, or priority.
-    - Adding, removing, reordering, or splitting user stories within epics.
-    - Proposing modified architecture diagram snippets (e.g., providing an updated Mermaid diagram block or a clear textual description of the change to an existing diagram).
-    - Updating technology lists, configuration details, or specific sections within the PRD or architecture documents.
-    - Drafting new, small supporting artifacts if necessary (e.g., a brief addendum for a specific decision).
-  - If in "Incremental Mode," discuss and refine these proposed edits for each artifact or small group of related artifacts with the user as they are drafted.
-  - If in "YOLO Mode," compile all drafted edits for presentation in the next step.
-
-### 4. Generate "Sprint Change Proposal" with Edits
-
-- Synthesize the complete change-checklist analysis (covering findings from Sections 1-4) and all the agreed-upon proposed edits (from Instruction 3) into a single document titled "Sprint Change Proposal." This proposal should align with the structure suggested by Section 5 of the change-checklist.
-- The proposal must clearly present:
-  - **Analysis Summary:** A concise overview of the original issue, its analyzed impact (on epics, artifacts, MVP scope), and the rationale for the chosen path forward.
-  - **Specific Proposed Edits:** For each affected artifact, clearly show or describe the exact changes (e.g., "Change Story X.Y from: [old text] To: [new text]", "Add new Acceptance Criterion to Story A.B: [new AC]", "Update Section 3.2 of Architecture Document as follows: [new/modified text or diagram description]").
-- Present the complete draft of the "Sprint Change Proposal" to the user for final review and feedback. Incorporate any final adjustments requested by the user.
-
-### 5. Finalize & Determine Next Steps
-
-- Obtain explicit user approval for the "Sprint Change Proposal," including all the specific edits documented within it.
-- Provide the finalized "Sprint Change Proposal" document to the user.
-- **Based on the nature of the approved changes:**
-  - **If the approved edits sufficiently address the change and can be implemented directly or organized by a PO/SM:** State that the "Correct Course Task" is complete regarding analysis and change proposal, and the user can now proceed with implementing or logging these changes (e.g., updating actual project documents, backlog items). Suggest handoff to a PO/SM agent for backlog organization if appropriate.
-  - **If the analysis and proposed path (as per checklist Section 4 and potentially Section 6) indicate that the change requires a more fundamental replan (e.g., significant scope change, major architectural rework):** Clearly state this conclusion. Advise the user that the next step involves engaging the primary PM or Architect agents, using the "Sprint Change Proposal" as critical input and context for that deeper replanning effort.
-
-## Output Deliverables
-
-- **Primary:** A "Sprint Change Proposal" document (in markdown format). This document will contain:
-  - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
-  - Specific, clearly drafted proposed edits for all affected project artifacts.
-- **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
-==================== END: .bmad-core/tasks/correct-course.md ====================
-
-==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
-# Create Deep Research Prompt Task
-
-This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
-
-## Purpose
-
-Generate well-structured research prompts that:
-
-- Define clear research objectives and scope
-- Specify appropriate research methodologies
-- Outline expected deliverables and formats
-- Guide systematic investigation of complex topics
-- Ensure actionable insights are captured
-
-## Research Type Selection
-
-CRITICAL: First, help the user select the most appropriate research focus based on their needs and any input documents they've provided.
-
-### 1. Research Focus Options
-
-Present these numbered options to the user:
-
-1. **Product Validation Research**
-
-   - Validate product hypotheses and market fit
-   - Test assumptions about user needs and solutions
-   - Assess technical and business feasibility
-   - Identify risks and mitigation strategies
-
-2. **Market Opportunity Research**
-
-   - Analyze market size and growth potential
-   - Identify market segments and dynamics
-   - Assess market entry strategies
-   - Evaluate timing and market readiness
-
-3. **User & Customer Research**
-
-   - Deep dive into user personas and behaviors
-   - Understand jobs-to-be-done and pain points
-   - Map customer journeys and touchpoints
-   - Analyze willingness to pay and value perception
-
-4. **Competitive Intelligence Research**
-
-   - Detailed competitor analysis and positioning
-   - Feature and capability comparisons
-   - Business model and strategy analysis
-   - Identify competitive advantages and gaps
-
-5. **Technology & Innovation Research**
-
-   - Assess technology trends and possibilities
-   - Evaluate technical approaches and architectures
-   - Identify emerging technologies and disruptions
-   - Analyze build vs. buy vs. partner options
-
-6. **Industry & Ecosystem Research**
-
-   - Map industry value chains and dynamics
-   - Identify key players and relationships
-   - Analyze regulatory and compliance factors
-   - Understand partnership opportunities
-
-7. **Strategic Options Research**
-
-   - Evaluate different strategic directions
-   - Assess business model alternatives
-   - Analyze go-to-market strategies
-   - Consider expansion and scaling paths
-
-8. **Risk & Feasibility Research**
-
-   - Identify and assess various risk factors
-   - Evaluate implementation challenges
-   - Analyze resource requirements
-   - Consider regulatory and legal implications
-
-9. **Custom Research Focus**
-
-   - User-defined research objectives
-   - Specialized domain investigation
-   - Cross-functional research needs
-
-### 2. Input Processing
-
-**If Project Brief provided:**
-
-- Extract key product concepts and goals
-- Identify target users and use cases
-- Note technical constraints and preferences
-- Highlight uncertainties and assumptions
-
-**If Brainstorming Results provided:**
-
-- Synthesize main ideas and themes
-- Identify areas needing validation
-- Extract hypotheses to test
-- Note creative directions to explore
-
-**If Market Research provided:**
-
-- Build on identified opportunities
-- Deepen specific market insights
-- Validate initial findings
-- Explore adjacent possibilities
-
-**If Starting Fresh:**
-
-- Gather essential context through questions
-- Define the problem space
-- Clarify research objectives
-- Establish success criteria
-
-## Process
-
-### 3. Research Prompt Structure
-
-CRITICAL: collaboratively develop a comprehensive research prompt with these components.
-
-#### A. Research Objectives
-
-CRITICAL: collaborate with the user to articulate clear, specific objectives for the research.
-
-- Primary research goal and purpose
-- Key decisions the research will inform
-- Success criteria for the research
-- Constraints and boundaries
-
-#### B. Research Questions
-
-CRITICAL: collaborate with the user to develop specific, actionable research questions organized by theme.
-
-**Core Questions:**
-
-- Central questions that must be answered
-- Priority ranking of questions
-- Dependencies between questions
-
-**Supporting Questions:**
-
-- Additional context-building questions
-- Nice-to-have insights
-- Future-looking considerations
-
-#### C. Research Methodology
-
-**Data Collection Methods:**
-
-- Secondary research sources
-- Primary research approaches (if applicable)
-- Data quality requirements
-- Source credibility criteria
-
-**Analysis Frameworks:**
-
-- Specific frameworks to apply
-- Comparison criteria
-- Evaluation methodologies
-- Synthesis approaches
-
-#### D. Output Requirements
-
-**Format Specifications:**
-
-- Executive summary requirements
-- Detailed findings structure
-- Visual/tabular presentations
-- Supporting documentation
-
-**Key Deliverables:**
-
-- Must-have sections and insights
-- Decision-support elements
-- Action-oriented recommendations
-- Risk and uncertainty documentation
-
-### 4. Prompt Generation
-
-**Research Prompt Template:**
-
-```markdown
-## Research Objective
-
-[Clear statement of what this research aims to achieve]
-
-## Background Context
-
-[Relevant information from project brief, brainstorming, or other inputs]
-
-## Research Questions
-
-### Primary Questions (Must Answer)
-
-1. [Specific, actionable question]
-2. [Specific, actionable question]
-   ...
-
-### Secondary Questions (Nice to Have)
-
-1. [Supporting question]
-2. [Supporting question]
-   ...
-
-## Research Methodology
-
-### Information Sources
-
-- [Specific source types and priorities]
-
-### Analysis Frameworks
-
-- [Specific frameworks to apply]
-
-### Data Requirements
-
-- [Quality, recency, credibility needs]
-
-## Expected Deliverables
-
-### Executive Summary
-
-- Key findings and insights
-- Critical implications
-- Recommended actions
-
-### Detailed Analysis
-
-[Specific sections needed based on research type]
-
-### Supporting Materials
-
-- Data tables
-- Comparison matrices
-- Source documentation
-
-## Success Criteria
-
-[How to evaluate if research achieved its objectives]
-
-## Timeline and Priority
-
-[If applicable, any time constraints or phasing]
+## SEQUENTIAL Task Execution
+
+### 0. MCP Availability and Sprint Requirement Check
+
+**MCP Availability Check:**
+- Verify MCP tools are available for the current project
+- If MCP unavailable, fall back to file-based operation with warning
+- If MCP available, use enhanced workflow with real-time integration
+
+**CRITICAL: Sprint Requirement Check:**
+1. Use `bmad_get_current_sprint` to verify active sprint exists:
+   - If NO active sprint: **STOP** and display error:
+     ```
+     ❌ ERROR: No Active Sprint Found
+     
+     Story creation requires an active sprint with defined goals.
+     
+     Next Steps:
+     1. Run SM agent *start-sprint command to create a new sprint
+     2. Define sprint goal and capacity
+     3. Then return to create individual stories
+     
+     Reason: All stories must align with sprint goals for proper tracking.
+     ```
+   - If active sprint exists: Continue with story creation
+
+2. Display current sprint context:
+   ```
+   🏃 Current Sprint: ${sprint_name}
+   📅 Sprint Goal: ${sprint_goal}
+   ⏰ Sprint Timeline: ${start_date} to ${end_date}
+   📊 Sprint Progress: ${completed_stories}/${total_stories} stories
+   ```
+
+### 1. Quick Project Assessment (MCP Enhanced)
+
+**Current System Context Using MCP:**
+
+1. **Project State Analysis:** Use `bmad_get_project_progress`:
+   - [ ] Current project completion status understood
+   - [ ] Active areas of development identified
+   - [ ] Recent story patterns and conventions noted
+
+2. **Epic Context Discovery:** Use `bmad_query_epics`:
+   - [ ] Available epics for story assignment identified
+   - [ ] Epic priorities and focus areas understood
+   - [ ] Epic numbering and naming conventions noted
+
+3. **Existing Story Patterns:** Use `bmad_query_tasks`:
+   - [ ] Recent story formats and structures reviewed
+   - [ ] Technology stack patterns identified from existing stories
+   - [ ] Integration approaches used in similar stories noted
+
+**Interactive Change Scope Definition:**
+
+```
+Brownfield Story Definition:
+1. What specific functionality needs to be added or modified?
+2. Which existing components/files will be touched?
+3. What existing patterns should this change follow?
+4. What is the success criteria for this change?
+5. Which epic should this story belong to?
 ```
 
-### 5. Review and Refinement
+### 2. Epic Selection and Story Numbering
 
-1. **Present Complete Prompt**
+**MCP-Enhanced Epic Assignment:**
 
-   - Show the full research prompt
-   - Explain key elements and rationale
-   - Highlight any assumptions made
+1. **Epic Selection:** Use interactive selection from available epics:
+   ```
+   Available Epics for Story Assignment:
+   [List from bmad_query_epics with completion status]
+   
+   Select Epic Number for this story: 
+   (or type 'new' to create a new epic first)
+   ```
 
-2. **Gather Feedback**
+2. **Story Number Generation:** Use `bmad_get_next_story_number`:
+   - Get next available story number for selected epic
+   - Ensure proper story sequencing
+   - Validate no conflicts with existing stories
 
-   - Are the objectives clear and correct?
-   - Do the questions address all concerns?
-   - Is the scope appropriate?
-   - Are output requirements sufficient?
+### 3. Story Creation via MCP Tools
 
-3. **Refine as Needed**
-   - Incorporate user feedback
-   - Adjust scope or focus
-   - Add missing elements
-   - Clarify ambiguities
+**MCP-Enhanced Story Creation:**
 
-### 6. Next Steps Guidance
+1. **Story Data Collection:**
 
-**Execution Options:**
+Interactive story definition following brownfield patterns:
 
-1. **Use with AI Research Assistant**: Provide this prompt to an AI model with research capabilities
-2. **Guide Human Research**: Use as a framework for manual research efforts
-3. **Hybrid Approach**: Combine AI and human research using this structure
+```
+Story Information Required:
+- Epic Number: ${selected_epic_num}
+- Story Number: ${next_story_num} (auto-generated)
+- Story Title: ${concise_story_title}
+- Story Description: ${detailed_description_with_acceptance_criteria}
+- Assignee: [dev/qa/sm/pm - default: dev]
+- Priority: [HIGH/MEDIUM/LOW - default: MEDIUM]
+```
 
-**Integration Points:**
+2. **Enhanced Story Description Template:**
 
-- How findings will feed into next phases
-- Which team members should review results
-- How to validate findings
-- When to revisit or expand research
+```markdown
+# Story ${epic_num}.${story_num}: ${story_title}
 
-## Important Notes
+## Brownfield Context
+**Existing System Integration**: ${integration_description}
+**Technology Stack**: ${relevant_tech_stack}
+**Existing Patterns**: ${patterns_to_follow}
 
-- The quality of the research prompt directly impacts the quality of insights gathered
-- Be specific rather than general in research questions
-- Consider both current state and future implications
-- Balance comprehensiveness with focus
-- Document assumptions and limitations clearly
-- Plan for iterative refinement based on initial findings
-==================== END: .bmad-core/tasks/create-deep-research-prompt.md ====================
+## User Story
+As a ${user_type}
+I want ${functionality}
+So that ${business_value}
 
-==================== START: .bmad-core/tasks/create-doc.md ====================
-# Create Document from Template (YAML Driven)
+## Acceptance Criteria
+${detailed_acceptance_criteria}
+
+## Implementation Notes
+**Files/Components to Modify**: ${file_list}
+**Integration Points**: ${integration_points}
+**Testing Approach**: ${testing_strategy}
+
+## Definition of Done
+- [ ] Functionality implemented following existing patterns
+- [ ] Integration with existing system verified
+- [ ] Existing functionality unaffected
+- [ ] Code follows project conventions
+- [ ] Testing completed and passing
+- [ ] Documentation updated if needed
+```
+
+3. **Create Story via MCP:** Use `bmad_create_story` tool:
+   ```json
+   {
+     "epic_num": <epic_number>,
+     "title": "<story_title>",
+     "description": "<enhanced_story_description_markdown>",
+     "assignee": "dev",
+     "priority": "<priority_level>",
+     "document_id": "<optional_linked_document>",
+     "document_section": "<optional_section_reference>"
+   }
+   ```
+
+4. **Auto-assign to Current Sprint:** Use `bmad_assign_story_to_sprint`:
+   ```json
+   {
+     "task_id": "<created_story_id>",
+     "sprint_id": "<current_sprint_id>"
+   }
+   ```
+
+### 4. Story Validation and Enhancement
+
+**MCP-Enhanced Story Validation:**
+
+1. **Story Completeness Check:**
+   - [ ] Story has clear acceptance criteria
+   - [ ] Integration points are identified
+   - [ ] Implementation approach is defined
+   - [ ] Success criteria are measurable
+
+2. **Brownfield Validation:**
+   - [ ] Existing system impact is minimal and controlled
+   - [ ] Story follows established patterns
+   - [ ] Integration approach is low-risk
+   - [ ] Change boundaries are well-defined
+
+3. **Sprint Alignment Check:** Use current sprint context:
+   - [ ] Story aligns with sprint goal
+   - [ ] Story fits within sprint capacity
+   - [ ] Story priority matches sprint focus
+
+### 5. Story Documentation and Tracking
+
+**Enhanced Story Documentation:**
+
+1. **Story Context Capture:** Store additional brownfield context:
+   - Existing system touchpoints
+   - Integration requirements
+   - Pattern compliance notes
+   - Risk assessment summary
+
+2. **Link to Related Documentation:** If relevant documents exist:
+   ```json
+   {
+     "entity_type": "task",
+     "entity_id": "<story_id>",
+     "document_id": "<relevant_document_id>",
+     "document_section": "<relevant_section>",
+     "link_purpose": "implementation-reference"
+   }
+   ```
+
+### 6. Story Handoff and Tracking Setup
+
+**Story Handoff Summary:**
+
+1. **Story Creation Confirmation:**
+   ```
+   ✅ BROWNFIELD STORY CREATED SUCCESSFULLY
+   
+   Story: E${epic_num}.${story_num} - ${story_title}
+   Epic: ${epic_title}
+   Sprint: ${current_sprint_name}
+   Priority: ${priority}
+   Assignee: ${assignee}
+   
+   Integration Points: ${integration_summary}
+   ```
+
+2. **Next Steps Guidance:**
+   ```
+   Next Actions:
+   1. Story is assigned to current sprint: ${sprint_name}
+   2. Story appears in task board for development
+   3. Dev agent can validate and begin implementation
+   4. Progress tracked via sprint dashboard
+   ```
+
+**Real-Time Tracking Setup:**
+
+1. **Sprint Integration:** Story automatically appears in:
+   - Current sprint task board
+   - Sprint progress tracking
+   - Epic completion metrics
+
+2. **Progress Monitoring:** Story status updates via:
+   - `bmad_update_task_status` for status changes
+   - Sprint velocity tracking
+   - Epic completion progress
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_create_story` - Create story with automatic numbering
+- `bmad_get_next_story_number` - Get next story number for epic
+- `bmad_assign_story_to_sprint` - Assign story to current sprint
+- `bmad_get_current_sprint` - Verify sprint context
+- `bmad_query_epics` - Get available epics for assignment
+- `bmad_query_tasks` - Review existing story patterns
+- `bmad_get_project_progress` - Understand current project state
+
+### Enhanced Resources:
+- `bmad://sprints/current/tasks` - Current sprint stories
+- `bmad://epics/<num>/tasks` - Stories within specific epic
+- `bmad://project/progress` - Overall project completion status
+
+## Critical Success Factors
+
+1. **Sprint Context:** Story created within active sprint framework
+2. **Epic Alignment:** Story properly assigned to relevant epic
+3. **Integration Awareness:** Clear understanding of existing system touchpoints
+4. **Pattern Compliance:** Story follows established project patterns
+5. **Scope Control:** Story scope is focused and achievable in single development session
+
+This MCP-enhanced approach ensures brownfield stories are properly integrated with project tracking, automatically assigned to sprints, and prepared for efficient development execution.
+==================== END: .bmad-core/tasks/brownfield-create-story-mcp.md ====================
+
+==================== START: .bmad-core/tasks/correct-course-mcp.md ====================
+# Correct Course Task (MCP Enhanced)
+
+## Purpose
+
+MCP-enhanced change management providing real-time project state analysis and structured artifact updates. This version uses MCP tools to analyze current project state, assess change impacts, and track implementation of corrective actions with full audit trails.
+
+## When to Use This Task
+
+**Use this task when:**
+- Project scope or requirements have changed
+- Sprint goals need adjustment due to new information
+- Epic priorities need rebalancing
+- Technical constraints require scope modifications
+- Stakeholder feedback requires project direction changes
+
+## SEQUENTIAL Task Execution
+
+### 0. MCP Availability and Project State Analysis
+
+**MCP Availability Check:**
+- Verify MCP tools are available for comprehensive change analysis
+- If MCP unavailable, fall back to file-based operation with warning
+- If MCP available, use enhanced workflow with real-time data
+
+**Current Project State Assessment:**
+1. Use `bmad_get_project_progress` to understand baseline:
+   - Overall project completion status
+   - Current sprint progress and goals
+   - Epic completion rates and priorities
+   - Recent velocity and progress patterns
+
+2. Use `bmad_get_current_sprint` to assess sprint context:
+   - Active sprint goals and timeline
+   - Sprint progress and remaining capacity
+   - Sprint-specific change impact potential
+
+### 1. Initial Setup & Mode Selection (MCP Enhanced)
+
+**Change Trigger Documentation:**
+
+1. **Change Context Capture:**
+   ```
+   Change Analysis Initiation:
+   - Change Trigger: ${change_description}
+   - Reported Impact: ${perceived_impact}
+   - Urgency Level: [HIGH/MEDIUM/LOW]
+   - Scope of Change: [Epic/Sprint/Project/Technical]
+   ```
+
+2. **MCP-Enhanced Context Gathering:**
+   - Use `bmad_query_epics` to review all epics that might be affected
+   - Use `bmad_query_tasks` to identify stories that could be impacted
+   - Use document queries to gather relevant PRD/Architecture context
+
+**Interaction Mode Selection:**
+
+Ask user for preferred analysis approach:
+```
+Change Analysis Mode Selection:
+1. **Incremental (Recommended)**: Work through each impact area step-by-step with real-time MCP data validation
+2. **Comprehensive Analysis**: Conduct full change impact assessment using all MCP data, then present consolidated recommendations
+
+Select mode [1-2]: 
+```
+
+### 2. Execute Change Impact Analysis (MCP Enhanced)
+
+**Section 1: Change Context Analysis**
+
+Using MCP tools for comprehensive analysis:
+
+1. **Epic Impact Assessment:** Use `bmad_query_epics` to analyze:
+   - Which epics are directly affected by the change
+   - Epic priorities and their alignment with the change
+   - Epic completion status and remaining work
+
+2. **Story Impact Assessment:** Use `bmad_query_tasks` to identify:
+   - Stories that directly implement affected functionality
+   - Stories that have dependencies on changed components
+   - In-progress stories that might need modification
+
+3. **Sprint Impact Assessment:** Use `bmad_get_current_sprint` to evaluate:
+   - How change affects current sprint goals
+   - Sprint capacity implications of the change
+   - Sprint timeline impacts and adjustment needs
+
+**Section 2: Artifact Conflict Analysis**
+
+1. **Document Impact Assessment:** Use document queries to review:
+   - PRD sections that need updates due to the change
+   - Architecture decisions that might be affected
+   - Technical specifications requiring modification
+
+2. **Dependency Analysis:** Use MCP queries to identify:
+   - Task dependencies that might be broken
+   - Epic sequencing that might need adjustment
+   - Sprint planning that requires reconsideration
+
+**Section 3: Solution Path Evaluation**
+
+Interactive analysis of potential solutions:
+
+```
+Change Resolution Options:
+1. **Scope Adjustment**: Modify existing epics/stories to accommodate change
+2. **Priority Rebalancing**: Shift epic/story priorities to address change
+3. **Sprint Reallocation**: Move stories between sprints to manage impact
+4. **Technical Pivot**: Adjust technical approach while maintaining goals
+5. **Scope Reduction**: Remove lower-priority items to accommodate change
+6. **Timeline Extension**: Extend sprint/project timeline for proper implementation
+
+Recommended Approach: [Based on MCP data analysis]
+Rationale: [Data-driven reasoning from MCP queries]
+```
+
+### 3. Draft Proposed Changes (MCP Enhanced)
+
+**MCP-Assisted Change Drafting:**
+
+1. **Epic Modifications:**
+   - Use MCP data to identify which epics need updates
+   - Draft specific epic description/priority changes
+   - Propose epic story reallocation if needed
+
+2. **Story Updates:**
+   - Identify stories needing modification via `bmad_query_tasks`
+   - Draft updated story descriptions/acceptance criteria
+   - Propose story priority/assignee changes
+
+3. **Sprint Adjustments:**
+   - Use current sprint data to propose story reassignments
+   - Draft sprint goal modifications if needed
+   - Propose sprint timeline adjustments
+
+4. **Document Updates:**
+   - Identify specific document sections needing changes
+   - Draft updated content for affected documentation
+   - Propose new documentation if required
+
+### 4. Generate "Sprint Change Proposal" with MCP Validation
+
+**MCP-Enhanced Change Proposal:**
+
+1. **Change Proposal Document Creation:**
+
+```markdown
+# Sprint Change Proposal - ${change_date}
+
+## Change Trigger Summary
+**Change Description**: ${change_description}
+**Impact Scope**: ${impact_scope}
+**Urgency**: ${urgency_level}
+
+## Current Project State (MCP Data)
+**Overall Progress**: ${project_completion}%
+**Active Sprint**: ${sprint_name} (${sprint_progress}% complete)
+**Affected Epics**: ${affected_epic_list}
+**Impacted Stories**: ${impacted_story_count}
+
+## Impact Analysis
+${detailed_impact_analysis_from_mcp_data}
+
+## Proposed Changes
+
+### Epic Modifications
+${epic_changes_with_current_vs_proposed}
+
+### Story Updates
+${story_changes_with_current_vs_proposed}
+
+### Sprint Adjustments
+${sprint_changes_with_timeline_impact}
+
+### Documentation Updates
+${document_changes_required}
+
+## Implementation Plan
+${step_by_step_implementation_approach}
+
+## Risk Assessment
+${identified_risks_and_mitigation}
+
+## Success Metrics
+${how_to_measure_change_success}
+```
+
+2. **Store Change Proposal:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "change-proposal",
+     "title": "Sprint Change Proposal - ${date}",
+     "content": "<change_proposal_markdown>",
+     "metadata": {
+       "change_trigger": "<trigger_description>",
+       "affected_epics": [epic_numbers],
+       "affected_stories": [story_ids],
+       "urgency": "<urgency_level>"
+     }
+   }
+   ```
+
+### 5. Change Implementation Tracking (MCP Enhanced)
+
+**MCP-Assisted Implementation:**
+
+1. **Change Execution Plan:**
+   - Use MCP tools to implement approved changes systematically
+   - Update epic priorities via `bmad_create_epic` or direct updates
+   - Modify story assignments via `bmad_update_task_status`
+   - Adjust sprint allocations via `bmad_assign_story_to_sprint`
+
+2. **Implementation Validation:**
+   - Use `bmad_get_project_progress` to verify changes are reflected
+   - Use `bmad_get_current_sprint` to confirm sprint adjustments
+   - Use `bmad_query_tasks` to validate story modifications
+
+3. **Change Audit Trail:**
+   - Link change proposal to affected entities via `bmad_link_entity_to_document`
+   - Track change implementation progress
+   - Document change outcomes and lessons learned
+
+### 6. Change Communication and Handoff
+
+**Change Implementation Summary:**
+
+1. **Change Summary Display:**
+   ```
+   ✅ CHANGE PROPOSAL IMPLEMENTED
+   
+   Change: ${change_description}
+   Affected Epics: ${epic_count}
+   Modified Stories: ${story_count}
+   Sprint Adjustments: ${sprint_changes}
+   
+   Implementation Status:
+   ${implementation_progress_summary}
+   ```
+
+2. **Next Steps Guidance:**
+   ```
+   Post-Change Actions:
+   1. Monitor sprint progress with new adjustments
+   2. Validate change success via defined metrics
+   3. Continue development with updated priorities
+   4. Review change impact in next sprint retrospective
+   ```
+
+**Handoff Scenarios:**
+
+1. **Fundamental Replanning Required:**
+   - If changes require major architectural revision: Handoff to Architect
+   - If changes require major scope revision: Handoff to PM
+   - If changes require new requirements gathering: Handoff to Analyst
+
+2. **Normal Development Continuation:**
+   - Changes implemented and tracked via MCP
+   - Development continues with updated context
+   - Regular monitoring via sprint tracking tools
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_get_project_progress` - Baseline project state analysis
+- `bmad_get_current_sprint` - Sprint context and impact assessment
+- `bmad_query_epics` - Epic impact analysis and modifications
+- `bmad_query_tasks` - Story impact analysis and updates
+- `bmad_update_task_status` - Implement story modifications
+- `bmad_assign_story_to_sprint` - Adjust sprint allocations
+- `bmad_create_document` - Store change proposals and outcomes
+- `bmad_link_entity_to_document` - Connect changes to affected entities
+
+### Enhanced Resources:
+- `bmad://project/progress` - Real-time project completion status
+- `bmad://sprints/current` - Current sprint detailed status
+- `bmad://changes/history` - Historical change tracking
+
+## Critical Success Factors
+
+1. **Data-Driven Analysis:** Use MCP data for objective impact assessment
+2. **Systematic Implementation:** Apply changes through structured MCP tool usage
+3. **Audit Trail Maintenance:** Track all changes for future reference
+4. **Stakeholder Communication:** Clear documentation of change rationale and impact
+5. **Continuous Validation:** Monitor change success through ongoing MCP data analysis
+
+This MCP-enhanced approach ensures that course corrections are data-driven, properly implemented, and fully tracked within the project management system.
+==================== END: .bmad-core/tasks/correct-course-mcp.md ====================
+
+==================== START: .bmad-core/tasks/create-deep-research-prompt-mcp.md ====================
+# Create Deep Research Prompt Task (MCP Enhanced)
+
+## Purpose
+
+MCP-enhanced research prompt generation with project context integration, real-time data validation, and structured research output templates.
+
+## SEQUENTIAL Task Execution
+
+### 0. MCP Availability and Project Context
+
+**MCP Availability Check:**
+- Verify MCP tools are available for context-aware research
+- If MCP unavailable, fall back to generic prompt generation with warning
+- If MCP available, use enhanced workflow with project data integration
+
+**Project Context Analysis:**
+1. Use `bmad_get_project_progress` to understand current project state
+2. Use `bmad_query_epics` to identify research alignment opportunities
+3. Use document queries to review existing research and documentation
+
+### 1. Research Topic Definition and Scoping
+
+**Interactive Research Scoping:**
+
+```
+Research Prompt Generation:
+1. Research Topic: ${topic_description}
+2. Research Purpose: [Market Analysis/Technical Investigation/Competitive Analysis/User Research]
+3. Project Context: [How does this research support current project goals?]
+4. Expected Output Format: [Report/Presentation/Data Analysis/Recommendations]
+5. Timeline: [Research completion timeframe]
+```
+
+**MCP-Enhanced Context Integration:**
+- Align research scope with current epic priorities
+- Integrate existing project knowledge to avoid duplication
+- Reference related documentation for context building
+
+### 2. Generate Comprehensive Research Prompt
+
+**MCP-Enhanced Research Prompt Creation:**
+
+```markdown
+# Deep Research Prompt: ${topic_title}
+
+## Research Context
+**Project Integration**: ${project_context_from_mcp}
+**Current Epic Focus**: ${relevant_epic_context}
+**Existing Knowledge**: ${related_document_summary}
+
+## Research Objectives
+${detailed_research_objectives}
+
+## Research Questions
+${structured_research_questions}
+
+## Expected Deliverables
+${output_specifications}
+
+## Research Methodology
+${recommended_research_approach}
+
+## Success Criteria
+${research_success_metrics}
+```
+
+### 3. Store and Link Research Prompt
+
+**Store Research Prompt:** Use `bmad_create_document`:
+```json
+{
+  "type": "research-prompt",
+  "title": "Research Prompt - ${topic_title}",
+  "content": "<research_prompt_markdown>",
+  "metadata": {
+    "research_type": "${research_type}",
+    "target_epic": "${epic_num}",
+    "expected_timeline": "${timeline}"
+  }
+}
+```
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_get_project_progress` - Project context for research alignment
+- `bmad_query_epics` - Epic alignment for research focus
+- `bmad_create_document` - Store research prompts and results
+- Document queries - Review existing research and documentation
+
+This MCP-enhanced approach ensures research prompts are contextually relevant to current project needs and properly integrated with existing project knowledge.
+==================== END: .bmad-core/tasks/create-deep-research-prompt-mcp.md ====================
+
+==================== START: .bmad-core/tasks/create-doc-mcp.md ====================
+# Create Document from Template (MCP Enhanced)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
 
 **THIS IS AN EXECUTABLE WORKFLOW - NOT REFERENCE MATERIAL**
 
-When this task is invoked:
+This MCP-enhanced version provides structured document storage and tracking with interactive workflow requirements.
 
-1. **DISABLE ALL EFFICIENCY OPTIMIZATIONS** - This workflow requires full user interaction
-2. **MANDATORY STEP-BY-STEP EXECUTION** - Each section must be processed sequentially with user feedback
-3. **ELICITATION IS REQUIRED** - When `elicit: true`, you MUST use the 1-9 format and wait for user response
-4. **NO SHORTCUTS ALLOWED** - Complete documents cannot be created without following this workflow
+## MCP Availability Check
 
-**VIOLATION INDICATOR:** If you create a complete document without user interaction, you have violated this workflow.
+**Initial Setup:**
+Ask the user if they have MCP tools available. If they respond yes, use MCP-enhanced workflow. If no, inform the user that MCP tools are required for this enhanced workflow.
 
-## Critical: Template Discovery
+## MCP-Enhanced Document Creation Flow
 
-If a YAML Template has not been provided, list all templates from .bmad-core/templates or ask the user to provide another.
+### 0. MCP Context Setup
 
-## CRITICAL: Mandatory Elicitation Format
+**Project Context Loading:**
+1. Use `bmad://project/info` resource to get project metadata
+2. Check if project has existing documents of the same type
+3. Use `bmad_create_document` tool for structured storage
 
-**When `elicit: true`, this is a HARD STOP requiring user interaction:**
+### 1. Template Discovery and Document Planning
 
-**YOU MUST:**
+**Enhanced Template Selection:**
+- Load template from traditional file system (templates still file-based)
+- Use `bmad://project/info` to understand project context for template customization
+- Check for existing similar documents via MCP resources
 
-1. Present section content
-2. Provide detailed rationale (explain trade-offs, assumptions, decisions made)
-3. **STOP and present numbered options 1-9:**
-   - **Option 1:** Always "Proceed to next section"
-   - **Options 2-9:** Select 8 methods from data/elicitation-methods
-   - End with: "Select 1-9 or just type your question/feedback:"
-4. **WAIT FOR USER RESPONSE** - Do not proceed until user selects option or provides feedback
+**Document Initialization:**
+1. **Document Metadata Setup:**
+   ```json
+   {
+     "type": "prd|architecture|epic|story",
+     "title": "<document_title>",
+     "status": "DRAFT",
+     "version": "1.0"
+   }
+   ```
 
-**WORKFLOW VIOLATION:** Creating content for elicit=true sections without user interaction violates this task.
+2. **MCP Document Creation:** Use `bmad_create_document` tool:
+   ```json
+   {
+     "type": "<doc_type>",
+     "title": "<document_title>", 
+     "content": "<initial_content>",
+     "status": "DRAFT"
+   }
+   ```
 
-**NEVER ask yes/no questions or use any other format.**
+### 2. Interactive Section Processing
 
-## Processing Flow
+**Enhanced Section Workflow:**
 
-1. **Parse YAML template** - Load template metadata and sections
-2. **Set preferences** - Show current mode (Interactive), confirm output file
-3. **Process each section:**
-   - Skip if condition unmet
-   - Check agent permissions (owner/editors) - note if section is restricted to specific agents
-   - Draft content using section instruction
-   - Present content + detailed rationale
-   - **IF elicit: true** → MANDATORY 1-9 options format
-   - Save to file if possible
-4. **Continue until complete**
+**For Each Template Section:**
 
-## Detailed Rationale Requirements
+1. **Context Enhancement:** Before processing section, gather relevant context:
+   - Use `bmad://project/prd` or `bmad://project/architecture` to reference existing docs
+   - Use `bmad://project/progress` to understand current project state
+   - Use `bmad_query_tasks` to understand implementation context
 
-When presenting section content, ALWAYS include rationale that explains:
+2. **Interactive Processing (Maintaining Original Requirements):**
+   - Draft content using section instruction + MCP context
+   - Present content + detailed rationale (including MCP insights)
+   - **IF elicit: true** → MANDATORY 1-9 options format (unchanged from original)
+   - Wait for user response and process feedback
 
-- Trade-offs and choices made (what was chosen over alternatives and why)
-- Key assumptions made during drafting
-- Interesting or questionable decisions that need user attention
-- Areas that might need validation
+3. **MCP Storage:** After each section is approved:
+   - Update document content via `bmad_create_document` tool
+   - Maintain version history and change tracking
+   - Store section metadata for future reference
 
-## Elicitation Results Flow
+### 3. Enhanced Rationale with MCP Insights
 
-After user selects elicitation method (2-9):
+**When presenting section content, include:**
 
-1. Execute method from data/elicitation-methods
-2. Present results with insights
-3. Offer options:
-   - **1. Apply changes and update section**
-   - **2. Return to elicitation menu**
-   - **3. Ask any questions or engage further with this elicitation**
+- **Traditional rationale** (trade-offs, assumptions, decisions)
+- **Project context insights** from `bmad://project/info`
+- **Cross-reference insights** from existing documents
+- **Implementation readiness** based on current project progress
+- **Dependency analysis** from task database
 
-## Agent Permissions
+**Example Enhanced Rationale:**
+```
+SECTION: Product Overview
+CONTENT: [Generated content]
 
-When processing sections with agent permission fields:
+RATIONALE:
+- Trade-offs: Chose mobile-first approach over desktop due to user research
+- Assumptions: Assuming React/Node.js stack based on project architecture
+- MCP Insights: Project is 45% complete with 3 active epics in progress
+- Cross-references: Aligns with existing architecture document section 3.2
+- Dependencies: No blocking tasks for this feature scope
 
-- **owner**: Note which agent role initially creates/populates the section
-- **editors**: List agent roles allowed to modify the section
-- **readonly**: Mark sections that cannot be modified after creation
+[Standard 1-9 elicitation options...]
+```
 
-**For sections with restricted access:**
+### 4. Document Completion and Storage
 
-- Include a note in the generated document indicating the responsible agent
-- Example: "_(This section is owned by dev-agent and can only be modified by dev-agent)_"
+**MCP-Enhanced Completion:**
 
-## YOLO Mode
+1. **Final Document Assembly:**
+   - Compile all sections into complete document
+   - Update document status from DRAFT to FINAL
+   - Store complete document via `bmad_create_document`
 
-User can type `#yolo` to toggle to YOLO mode (process all sections at once).
+2. **Cross-Reference Updates:**
+   - Link to related documents in project database
+   - Update project metadata if this is a primary document (PRD/Architecture)
+   - Create any necessary epic records if document defines epics
 
-## CRITICAL REMINDERS
+3. **File System Sync:** 
+   - Save document to traditional file location for backwards compatibility
+   - Maintain both MCP database and file system versions
 
-**❌ NEVER:**
+### 5. Project Integration
 
-- Ask yes/no questions for elicitation
-- Use any format other than 1-9 numbered options
-- Create new elicitation methods
+**Enhanced Project Workflow:**
 
-**✅ ALWAYS:**
+**For PRD Documents:**
+1. Use `bmad_create_document` with type="prd"
+2. Extract and create epic records using `bmad_create_epic`
+3. Update project metadata to reference new PRD
 
-- Use exact 1-9 format when elicit: true
-- Select options 2-9 from data/elicitation-methods only
-- Provide detailed rationale explaining decisions
-- End with "Select 1-9 or just type your question/feedback:"
-==================== END: .bmad-core/tasks/create-doc.md ====================
+**For Architecture Documents:**
+1. Use `bmad_create_document` with type="architecture" 
+2. Update project technical constraints and specifications
+3. Link to relevant epics and stories for implementation tracking
 
-==================== START: .bmad-core/tasks/document-project.md ====================
-# Document an Existing Project
+**For Epic/Story Documents:**
+1. Create structured epic/story records in database
+2. Link to parent PRD or requirements documents
+3. Enable tracking and progress monitoring
+
+### 6. Enhanced Benefits
+
+**MCP Integration Advantages:**
+
+1. **Document Versioning:** Automatic version tracking and history
+2. **Cross-Reference Integrity:** Links between documents maintained automatically
+3. **Progress Tracking:** Document creation integrated with project progress
+4. **Search and Discovery:** Documents accessible via MCP resources
+5. **Collaborative Updates:** Multiple agents can reference and update documents
+
+**Real-Time Context:**
+- **Live Progress Data:** Access current sprint/epic progress during document creation
+- **Implementation Feedback:** Reference actual development progress when planning
+- **Resource Availability:** Check what components/features already exist
+
+## Elicitation with MCP Context
+
+**Enhanced Elicitation Methods:**
+
+When user selects elicitation options 2-9, enhance with MCP data:
+
+- **Stakeholder Analysis:** Include current project stakeholders from MCP
+- **Risk Assessment:** Factor in current project risks and blockers from task database
+- **Feasibility Check:** Cross-reference with current architecture and capabilities
+- **Impact Analysis:** Consider effects on existing epics and stories
+- **Timeline Estimation:** Use historical project data for realistic planning
+
+## Fallback Strategy
+
+**If MCP tools unavailable:**
+1. Display warning: "MCP tools not available, document creation requires MCP server"
+2. Inform user that MCP server setup is required for document management
+3. Provide instructions for enabling MCP server
+4. Do not proceed without MCP tools
+
+**MCP Requirements:**
+- All documents created in MCP database with optional file export
+- MCP server must be running for enhanced document management
+- Enhanced features require MCP integration
+
+## CRITICAL WORKFLOW REQUIREMENTS
+
+**Core workflow requirements:**
+
+1. **MANDATORY ELICITATION FORMAT** - 1-9 numbered options when elicit=true
+2. **NO SHORTCUTS** - Full user interaction required for elicit sections
+3. **SEQUENTIAL PROCESSING** - Each section processed step-by-step
+4. **DETAILED RATIONALE** - Explain all trade-offs and decisions
+
+**MCP enhancements supplement but do not replace these core requirements.**
+
+## MCP Tools Reference
+
+**Available for Document Creation:**
+- `bmad_create_document` - Store documents in database
+- `bmad_create_epic` - Create epic records from PRD
+- `bmad://project/info` - Access project context
+- `bmad://project/prd` - Reference existing PRD
+- `bmad://project/architecture` - Reference existing architecture
+- `bmad://project/progress` - Get current project status
+==================== END: .bmad-core/tasks/create-doc-mcp.md ====================
+
+==================== START: .bmad-core/tasks/document-project-mcp.md ====================
+# Document Project Task (MCP Enhanced)
 
 ## Purpose
 
-Generate comprehensive documentation for existing projects optimized for AI development agents. This task creates structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase.
-
-## Task Instructions
-
-### 1. Initial Project Analysis
-
-**CRITICAL:** First, check if a PRD or requirements document exists in context. If yes, use it to focus your documentation efforts on relevant areas only.
-
-**IF PRD EXISTS**:
-
-- Review the PRD to understand what enhancement/feature is planned
-- Identify which modules, services, or areas will be affected
-- Focus documentation ONLY on these relevant areas
-- Skip unrelated parts of the codebase to keep docs lean
-
-**IF NO PRD EXISTS**:
-Ask the user:
-
-"I notice you haven't provided a PRD or requirements document. To create more focused and useful documentation, I recommend one of these options:
-
-1. **Create a PRD first** - Would you like me to help create a brownfield PRD before documenting? This helps focus documentation on relevant areas.
-
-2. **Provide existing requirements** - Do you have a requirements document, epic, or feature description you can share?
-
-3. **Describe the focus** - Can you briefly describe what enhancement or feature you're planning? For example:
-   - 'Adding payment processing to the user service'
-   - 'Refactoring the authentication module'
-   - 'Integrating with a new third-party API'
-
-4. **Document everything** - Or should I proceed with comprehensive documentation of the entire codebase? (Note: This may create excessive documentation for large projects)
-
-Please let me know your preference, or I can proceed with full documentation if you prefer."
-
-Based on their response:
-
-- If they choose option 1-3: Use that context to focus documentation
-- If they choose option 4 or decline: Proceed with comprehensive analysis below
-
-Begin by conducting analysis of the existing project. Use available tools to:
-
-1. **Project Structure Discovery**: Examine the root directory structure, identify main folders, and understand the overall organization
-2. **Technology Stack Identification**: Look for package.json, requirements.txt, Cargo.toml, pom.xml, etc. to identify languages, frameworks, and dependencies
-3. **Build System Analysis**: Find build scripts, CI/CD configurations, and development commands
-4. **Existing Documentation Review**: Check for README files, docs folders, and any existing documentation
-5. **Code Pattern Analysis**: Sample key files to understand coding patterns, naming conventions, and architectural approaches
-
-Ask the user these elicitation questions to better understand their needs:
-
-- What is the primary purpose of this project?
-- Are there any specific areas of the codebase that are particularly complex or important for agents to understand?
-- What types of tasks do you expect AI agents to perform on this project? (e.g., bug fixes, feature additions, refactoring, testing)
-- Are there any existing documentation standards or formats you prefer?
-- What level of technical detail should the documentation target? (junior developers, senior developers, mixed team)
-- Is there a specific feature or enhancement you're planning? (This helps focus documentation)
-
-### 2. Deep Codebase Analysis
-
-CRITICAL: Before generating documentation, conduct extensive analysis of the existing codebase:
-
-1. **Explore Key Areas**:
-   - Entry points (main files, index files, app initializers)
-   - Configuration files and environment setup
-   - Package dependencies and versions
-   - Build and deployment configurations
-   - Test suites and coverage
-
-2. **Ask Clarifying Questions**:
-   - "I see you're using [technology X]. Are there any custom patterns or conventions I should document?"
-   - "What are the most critical/complex parts of this system that developers struggle with?"
-   - "Are there any undocumented 'tribal knowledge' areas I should capture?"
-   - "What technical debt or known issues should I document?"
-   - "Which parts of the codebase change most frequently?"
-
-3. **Map the Reality**:
-   - Identify ACTUAL patterns used (not theoretical best practices)
-   - Find where key business logic lives
-   - Locate integration points and external dependencies
-   - Document workarounds and technical debt
-   - Note areas that differ from standard patterns
-
-**IF PRD PROVIDED**: Also analyze what would need to change for the enhancement
-
-### 3. Core Documentation Generation
-
-[[LLM: Generate a comprehensive BROWNFIELD architecture document that reflects the ACTUAL state of the codebase.
-
-**CRITICAL**: This is NOT an aspirational architecture document. Document what EXISTS, including:
-
-- Technical debt and workarounds
-- Inconsistent patterns between different parts
-- Legacy code that can't be changed
-- Integration constraints
-- Performance bottlenecks
-
-**Document Structure**:
-
-# [Project Name] Brownfield Architecture Document
-
-## Introduction
-
-This document captures the CURRENT STATE of the [Project Name] codebase, including technical debt, workarounds, and real-world patterns. It serves as a reference for AI agents working on enhancements.
-
-### Document Scope
-
-[If PRD provided: "Focused on areas relevant to: {enhancement description}"]
-[If no PRD: "Comprehensive documentation of entire system"]
-
-### Change Log
-
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| [Date] | 1.0 | Initial brownfield analysis | [Analyst] |
-
-## Quick Reference - Key Files and Entry Points
-
-### Critical Files for Understanding the System
-
-- **Main Entry**: `src/index.js` (or actual entry point)
-- **Configuration**: `config/app.config.js`, `.env.example`
-- **Core Business Logic**: `src/services/`, `src/domain/`
-- **API Definitions**: `src/routes/` or link to OpenAPI spec
-- **Database Models**: `src/models/` or link to schema files
-- **Key Algorithms**: [List specific files with complex logic]
-
-### If PRD Provided - Enhancement Impact Areas
-
-[Highlight which files/modules will be affected by the planned enhancement]
-
-## High Level Architecture
-
-### Technical Summary
-
-### Actual Tech Stack (from package.json/requirements.txt)
-
-| Category | Technology | Version | Notes |
-|----------|------------|---------|--------|
-| Runtime | Node.js | 16.x | [Any constraints] |
-| Framework | Express | 4.18.2 | [Custom middleware?] |
-| Database | PostgreSQL | 13 | [Connection pooling setup] |
-
-etc...
-
-### Repository Structure Reality Check
-
-- Type: [Monorepo/Polyrepo/Hybrid]
-- Package Manager: [npm/yarn/pnpm]
-- Notable: [Any unusual structure decisions]
-
-## Source Tree and Module Organization
-
-### Project Structure (Actual)
-
-```text
-project-root/
-├── src/
-│   ├── controllers/     # HTTP request handlers
-│   ├── services/        # Business logic (NOTE: inconsistent patterns between user and payment services)
-│   ├── models/          # Database models (Sequelize)
-│   ├── utils/           # Mixed bag - needs refactoring
-│   └── legacy/          # DO NOT MODIFY - old payment system still in use
-├── tests/               # Jest tests (60% coverage)
-├── scripts/             # Build and deployment scripts
-└── config/              # Environment configs
-```
-
-### Key Modules and Their Purpose
-
-- **User Management**: `src/services/userService.js` - Handles all user operations
-- **Authentication**: `src/middleware/auth.js` - JWT-based, custom implementation
-- **Payment Processing**: `src/legacy/payment.js` - CRITICAL: Do not refactor, tightly coupled
-- **[List other key modules with their actual files]**
-
-## Data Models and APIs
-
-### Data Models
-
-Instead of duplicating, reference actual model files:
-- **User Model**: See `src/models/User.js`
-- **Order Model**: See `src/models/Order.js`
-- **Related Types**: TypeScript definitions in `src/types/`
-
-### API Specifications
-
-- **OpenAPI Spec**: `docs/api/openapi.yaml` (if exists)
-- **Postman Collection**: `docs/api/postman-collection.json`
-- **Manual Endpoints**: [List any undocumented endpoints discovered]
-
-## Technical Debt and Known Issues
-
-### Critical Technical Debt
-
-1. **Payment Service**: Legacy code in `src/legacy/payment.js` - tightly coupled, no tests
-2. **User Service**: Different pattern than other services, uses callbacks instead of promises
-3. **Database Migrations**: Manually tracked, no proper migration tool
-4. **[Other significant debt]**
-
-### Workarounds and Gotchas
-
-- **Environment Variables**: Must set `NODE_ENV=production` even for staging (historical reason)
-- **Database Connections**: Connection pool hardcoded to 10, changing breaks payment service
-- **[Other workarounds developers need to know]**
-
-## Integration Points and External Dependencies
-
-### External Services
-
-| Service | Purpose | Integration Type | Key Files |
-|---------|---------|------------------|-----------|
-| Stripe | Payments | REST API | `src/integrations/stripe/` |
-| SendGrid | Emails | SDK | `src/services/emailService.js` |
-
-etc...
-
-### Internal Integration Points
-
-- **Frontend Communication**: REST API on port 3000, expects specific headers
-- **Background Jobs**: Redis queue, see `src/workers/`
-- **[Other integrations]**
-
-## Development and Deployment
-
-### Local Development Setup
-
-1. Actual steps that work (not ideal steps)
-2. Known issues with setup
-3. Required environment variables (see `.env.example`)
-
-### Build and Deployment Process
-
-- **Build Command**: `npm run build` (webpack config in `webpack.config.js`)
-- **Deployment**: Manual deployment via `scripts/deploy.sh`
-- **Environments**: Dev, Staging, Prod (see `config/environments/`)
-
-## Testing Reality
-
-### Current Test Coverage
-
-- Unit Tests: 60% coverage (Jest)
-- Integration Tests: Minimal, in `tests/integration/`
-- E2E Tests: None
-- Manual Testing: Primary QA method
-
-### Running Tests
-
-```bash
-npm test           # Runs unit tests
-npm run test:integration  # Runs integration tests (requires local DB)
-```
-
-## If Enhancement PRD Provided - Impact Analysis
-
-### Files That Will Need Modification
-
-Based on the enhancement requirements, these files will be affected:
-- `src/services/userService.js` - Add new user fields
-- `src/models/User.js` - Update schema
-- `src/routes/userRoutes.js` - New endpoints
-- [etc...]
-
-### New Files/Modules Needed
-
-- `src/services/newFeatureService.js` - New business logic
-- `src/models/NewFeature.js` - New data model
-- [etc...]
-
-### Integration Considerations
-
-- Will need to integrate with existing auth middleware
-- Must follow existing response format in `src/utils/responseFormatter.js`
-- [Other integration points]
-
-## Appendix - Useful Commands and Scripts
-
-### Frequently Used Commands
-
-```bash
-npm run dev         # Start development server
-npm run build       # Production build
-npm run migrate     # Run database migrations
-npm run seed        # Seed test data
-```
-
-### Debugging and Troubleshooting
-
-- **Logs**: Check `logs/app.log` for application logs
-- **Debug Mode**: Set `DEBUG=app:*` for verbose logging
-- **Common Issues**: See `docs/troubleshooting.md`]]
-
-### 4. Document Delivery
-
-1. **In Web UI (Gemini, ChatGPT, Claude)**:
-   - Present the entire document in one response (or multiple if too long)
-   - Tell user to copy and save as `docs/brownfield-architecture.md` or `docs/project-architecture.md`
-   - Mention it can be sharded later in IDE if needed
-
-2. **In IDE Environment**:
-   - Create the document as `docs/brownfield-architecture.md`
-   - Inform user this single document contains all architectural information
-   - Can be sharded later using PO agent if desired
-
-The document should be comprehensive enough that future agents can understand:
-
-- The actual state of the system (not idealized)
-- Where to find key files and logic
-- What technical debt exists
-- What constraints must be respected
-- If PRD provided: What needs to change for the enhancement]]
-
-### 5. Quality Assurance
-
-CRITICAL: Before finalizing the document:
-
-1. **Accuracy Check**: Verify all technical details match the actual codebase
-2. **Completeness Review**: Ensure all major system components are documented
-3. **Focus Validation**: If user provided scope, verify relevant areas are emphasized
-4. **Clarity Assessment**: Check that explanations are clear for AI agents
-5. **Navigation**: Ensure document has clear section structure for easy reference
-
-Apply the advanced elicitation task after major sections to refine based on user feedback.
-
-## Success Criteria
-
-- Single comprehensive brownfield architecture document created
-- Document reflects REALITY including technical debt and workarounds
-- Key files and modules are referenced with actual paths
-- Models/APIs reference source files rather than duplicating content
-- If PRD provided: Clear impact analysis showing what needs to change
-- Document enables AI agents to navigate and understand the actual codebase
-- Technical constraints and "gotchas" are clearly documented
-
-## Notes
-
-- This task creates ONE document that captures the TRUE state of the system
-- References actual files rather than duplicating content when possible
-- Documents technical debt, workarounds, and constraints honestly
-- For brownfield projects with PRD: Provides clear enhancement impact analysis
-- The goal is PRACTICAL documentation for AI agents doing real work
-==================== END: .bmad-core/tasks/document-project.md ====================
-
-==================== START: .bmad-core/tasks/create-next-story.md ====================
-# Create Next Story Task
+MCP-enhanced project documentation with real-time data integration, automated cross-referencing, and comprehensive project state capture using structured MCP queries.
+
+## SEQUENTIAL Task Execution
+
+### 0. MCP Availability and Project State Analysis
+
+**MCP Availability Check:**
+- Verify MCP tools are available for comprehensive project analysis
+- If MCP unavailable, fall back to manual documentation with warning
+- If MCP available, use enhanced workflow with real-time data integration
+
+**Project State Baseline:**
+1. Use `bmad_get_project_progress` to capture current project status
+2. Use `bmad_query_epics` to document all epics and their status
+3. Use `bmad_query_tasks` to analyze story completion patterns
+4. Use `bmad_get_current_sprint` to document active sprint context
+
+### 1. Comprehensive Project Documentation Generation
+
+**MCP-Enhanced Project Documentation:**
+
+1. **Project Overview Section:**
+   ```markdown
+   # Project Documentation - ${project_name}
+   
+   ## Project Status (Real-Time MCP Data)
+   - **Overall Completion**: ${completion_percentage}%
+   - **Total Epics**: ${epic_count}
+   - **Total Stories**: ${story_count}
+   - **Active Sprint**: ${current_sprint_name}
+   - **Documentation Date**: ${current_date}
+   
+   ## Epic Status Summary
+   ${epic_status_table_from_mcp}
+   
+   ## Recent Progress
+   ${recent_activity_from_mcp_data}
+   ```
+
+2. **Store Project Documentation:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "project-documentation",
+     "title": "Project Documentation - ${project_name}",
+     "content": "<comprehensive_project_docs_markdown>",
+     "metadata": {
+       "documentation_date": "${date}",
+       "project_completion": ${completion_percentage},
+       "epic_count": ${epic_count},
+       "story_count": ${story_count}
+     }
+   }
+   ```
+
+### 2. Automated Cross-Reference Generation
+
+**MCP-Enhanced Cross-Referencing:**
+
+1. **Link Documentation to All Project Entities:**
+   - Link to all epics via `bmad_link_entity_to_document`
+   - Reference key stories and milestones
+   - Connect to architectural decisions and technical documentation
+
+2. **Generate Entity Relationship Map:**
+   - Epic to story mappings from MCP data
+   - Document to entity relationship matrix
+   - Progress tracking cross-references
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_get_project_progress` - Real-time project status
+- `bmad_query_epics` - Epic documentation and status
+- `bmad_query_tasks` - Story analysis and completion tracking
+- `bmad_create_document` - Store comprehensive documentation
+- `bmad_link_entity_to_document` - Cross-reference project entities
+
+This MCP-enhanced approach provides living project documentation that stays current with real project data and maintains comprehensive cross-references to all project entities.
+==================== END: .bmad-core/tasks/document-project-mcp.md ====================
+
+==================== START: .bmad-core/tasks/create-next-story-mcp.md ====================
+# Create Next Story Task (MCP Enhanced)
 
 ## Purpose
 
-To identify the next logical story based on project progress and epic definitions, and then to prepare a comprehensive, self-contained, and actionable story file using the `Story Template`. This task ensures the story is enriched with all necessary technical context, requirements, and acceptance criteria, making it ready for efficient implementation by a Developer Agent with minimal need for additional research or finding its own context.
+Enhanced story creation using MCP tools for structured data management and querying. This task uses MCP tools to track project state and provides real-time insights into story progress.
 
 ## SEQUENTIAL Task Execution (Do not proceed until current Task is complete)
 
-### 0. Load Core Configuration and Check Workflow
+### 0. Check MCP Availability and Sprint Status
 
-- Load `.bmad-core/core-config.yaml` from the project root
-- If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story creation. You can either: 1) Copy it from GITHUB bmad-core/core-config.yaml and configure it for your project OR 2) Run the BMad installer against your project to upgrade and add the file automatically. Please add and configure core-config.yaml before proceeding."
-- Extract key configurations: `devStoryLocation`, `prd.*`, `architecture.*`, `workflow.*`
+**MCP Availability Check:**
+- Check if MCP tools are available for the current project
+- If MCP unavailable, fall back to file-based operation with warning
+- If MCP available, use MCP tools for enhanced workflow
+
+**CRITICAL: Sprint Requirement Check:**
+1. Use `bmad_get_current_sprint` to verify active sprint exists:
+   - If NO active sprint: **STOP** and display error:
+     ```
+     ❌ ERROR: No Active Sprint Found
+     
+     Story creation requires an active sprint with defined goals.
+     
+     Next Steps:
+     1. Run *start-sprint command to create a new sprint
+     2. Define sprint goal and target stories
+     3. Then return to create individual stories
+     
+     Reason: All stories must align with sprint goals for proper tracking.
+     ```
+   - If active sprint exists: Continue with story creation
+
+2. Display current sprint context:
+   ```
+   🏃 Current Sprint: ${sprint_name}
+   📅 Sprint Goal: ${sprint_goal}
+   ⏰ Sprint Timeline: ${start_date} to ${end_date}
+   📊 Sprint Progress: ${completed_stories}/${total_stories} stories
+   ```
 
 ### 1. Identify Next Story for Preparation
 
-#### 1.1 Locate Epic Files and Review Existing Stories
+#### 1.1 Query Tasks for Current Story Status
 
-- Based on `prdSharded` from config, locate epic files (sharded location/pattern or monolithic PRD sections)
-- If `devStoryLocation` has story files, load the highest `{epicNum}.{storyNum}.story.md` file
-- **If highest story exists:**
-  - Verify status is 'Done'. If not, alert user: "ALERT: Found incomplete story! File: {lastEpicNum}.{lastStoryNum}.story.md Status: [current status] You should fix this story first, but would you like to accept risk & override to create the next story in draft?"
-  - If proceeding, select next sequential story in the current epic
-  - If epic is complete, prompt user: "Epic {epicNum} Complete: All stories in Epic {epicNum} have been completed. Would you like to: 1) Begin Epic {epicNum + 1} with story 1 2) Select a specific story to work on 3) Cancel story creation"
-  - **CRITICAL**: NEVER automatically skip to another epic. User MUST explicitly instruct which story to create.
-- **If no story files exist:** The next story is ALWAYS 1.1 (first story of first epic)
-- Announce the identified story to the user: "Identified next story for preparation: {epicNum}.{storyNum} - {Story Title}"
+**MCP-Enhanced Approach:**
 
-### 2. Gather Story Requirements and Previous Story Context
+1. Use MCP tool `bmad_query_tasks` to check for incomplete tasks:
+   - Query all tasks with status "TODO" or "IN_PROGRESS" 
+   - If incomplete tasks found, alert user and ask to proceed or fix first
+   - Use `bmad_get_project_progress` to get overview
 
-- Extract story requirements from the identified epic file
-- If previous story exists, review Dev Agent Record sections for:
-  - Completion Notes and Debug Log References
-  - Implementation deviations and technical decisions
-  - Challenges encountered and lessons learned
-- Extract relevant insights that inform the current story's preparation
+2. Determine which epic to work on:
+   - Ask user which epic number they want to work on
+   - Use `bmad_query_tasks` with epic filter to see existing stories
+   - Calculate next story number based on highest existing story in that epic
 
-### 3. Gather Architecture Context
+3. Interactive decision making:
+   - If incomplete story found: Ask user "Fix this story first, or accept risk & override to create next?"
+   - If proceeding: Select next sequential story in the current epic
 
-#### 3.1 Determine Architecture Reading Strategy
+**Example MCP Tool Usage:**
+- `bmad_query_tasks`: `{"status": "TODO"}` - Get incomplete tasks
+- `bmad_query_tasks`: `{"epic_num": 1}` - Get all stories in Epic 1  
+- `bmad_get_project_progress`: `{}` - Get overall project status
 
-- **If `architectureVersion: >= v4` and `architectureSharded: true`**: Read `{architectureShardedLocation}/index.md` then follow structured reading order below
-- **Else**: Use monolithic `architectureFile` for similar sections
+**MCP Requirement:**
+If MCP tools unavailable, inform user that MCP server is required for story creation
 
-#### 3.2 Read Architecture Documents Based on Story Type
+### 2. Gather Requirements and Context
 
-**For ALL Stories:** tech-stack.md, unified-project-structure.md, coding-standards.md, testing-strategy.md
+#### 2.1 Retrieve Epic and Architecture Information
 
-**For Backend/API Stories, additionally:** data-models.md, database-schema.md, backend-architecture.md, rest-api-spec.md, external-apis.md
+**MCP-Enhanced Approach:**
 
-**For Frontend/UI Stories, additionally:** frontend-architecture.md, components.md, core-workflows.md, data-models.md
+1. **Access PRD and Architecture:** Use MCP resources to get context documents:
+   - `bmad://project/prd` - Get Product Requirements Document
+   - `bmad://project/architecture` - Get System Architecture Document  
+   - `bmad://project/info` - Get project metadata and overview
 
-**For Full-Stack Stories:** Read both Backend and Frontend sections above
+2. **Epic Information:** Look for epic documents or extract epic context from PRD:
+   - Read relevant sections of PRD that correspond to the target epic
+   - Extract epic-specific requirements and acceptance criteria
 
-#### 3.3 Extract Story-Specific Technical Details
+**Example MCP Resource Usage:**
+- Access `bmad://project/prd` to read the full PRD
+- Access `bmad://project/architecture` to read architecture constraints
+- Access `bmad://project/info` to understand project structure
 
-Extract ONLY information directly relevant to implementing the current story. Do NOT invent new libraries, patterns, or standards not in the source documents.
+#### 2.2 Analyze Previous Story Context
 
-Extract:
+**MCP-Enhanced Approach:**
 
-- Specific data models, schemas, or structures the story will use
-- API endpoints the story must implement or consume
-- Component specifications for UI elements in the story
-- File paths and naming conventions for new code
-- Testing requirements specific to the story's features
-- Security or performance considerations affecting the story
+1. **Get Completed Stories:** Use `bmad_query_tasks` to analyze previous work:
+   - Query: `{"epic_num": <current_epic>, "status": "DONE"}` 
+   - Review last completed story for implementation patterns
+   - Extract lessons learned and technical decisions
 
-ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
+2. **Epic Progress Analysis:** Use `bmad://epics/<epic_num>/progress` resource:
+   - Get completion percentage and remaining work
+   - Understand what components are already built
+   - Identify dependencies and integration points
 
-### 4. Verify Project Structure Alignment
+**Example Queries:**
+- `bmad_query_tasks`: `{"epic_num": 1, "status": "DONE"}` - Get completed stories in Epic 1
+- Access `bmad://epics/1/tasks` - Get all tasks in Epic 1
+- Access `bmad://epics/1/progress` - Get Epic 1 progress statistics
 
-- Cross-reference story requirements with Project Structure Guide from `docs/architecture/unified-project-structure.md`
-- Ensure file paths, component locations, or module names align with defined structures
-- Document any structural conflicts in "Project Structure Notes" section within the story draft
+### 3. Create Story with Enhanced Context
 
-### 5. Populate Story Template with Full Context
+#### 3.1 Gather Story Information
 
-- Create new story file: `{devStoryLocation}/{epicNum}.{storyNum}.story.md` using Story Template
-- Fill in basic story information: Title, Status (Draft), Story statement, Acceptance Criteria from Epic
-- **`Dev Notes` section (CRITICAL):**
-  - CRITICAL: This section MUST contain ONLY information extracted from architecture documents. NEVER invent or assume technical details.
-  - Include ALL relevant technical details from Steps 2-3, organized by category:
-    - **Previous Story Insights**: Key learnings from previous story
-    - **Data Models**: Specific schemas, validation rules, relationships [with source references]
-    - **API Specifications**: Endpoint details, request/response formats, auth requirements [with source references]
-    - **Component Specifications**: UI component details, props, state management [with source references]
-    - **File Locations**: Exact paths where new code should be created based on project structure
-    - **Testing Requirements**: Specific test cases or strategies from testing-strategy.md
-    - **Technical Constraints**: Version requirements, performance considerations, security rules
-  - Every technical detail MUST include its source reference: `[Source: architecture/{filename}.md#{section}]`
-  - If information for a category is not found in the architecture docs, explicitly state: "No specific guidance found in architecture docs"
-- **`Tasks / Subtasks` section:**
-  - Generate detailed, sequential list of technical tasks based ONLY on: Epic Requirements, Story AC, Reviewed Architecture Information
-  - Each task must reference relevant architecture documentation
-  - Include unit testing as explicit subtasks based on the Testing Strategy
-  - Link tasks to ACs where applicable (e.g., `Task 1 (AC: 1, 3)`)
-- Add notes on project structure alignment or discrepancies found in Step 4
+**Interactive Story Creation Process:**
 
-### 6. Story Draft Completion and Review
+1. **Story Title:** Ask user for story title:
+   ```
+   Story ${currentEpicNum}.${nextStoryNum} title:
+   ```
 
-- Review all sections for completeness and accuracy
-- Verify all source references are included for technical details
-- Ensure tasks align with both epic requirements and architecture constraints
-- Update status to "Draft" and save the story file
-- Execute `.bmad-core/tasks/execute-checklist` `.bmad-core/checklists/story-draft-checklist`
-- Provide summary to user including:
-  - Story created: `{devStoryLocation}/{epicNum}.{storyNum}.story.md`
-  - Status: Draft
-  - Key technical components included from architecture docs
-  - Any deviations or conflicts noted between epic and architecture
-  - Checklist Results
-  - Next steps: For Complex stories, suggest the user carefully review the story draft and also optionally have the PO run the task `.bmad-core/tasks/validate-next-story`
-==================== END: .bmad-core/tasks/create-next-story.md ====================
+2. **Story Description:** Ask user for detailed description including:
+   - User story format: "As a [user], I want [goal] so that [benefit]"
+   - Acceptance criteria
+   - Any special requirements or constraints
 
-==================== START: .bmad-core/tasks/execute-checklist.md ====================
-# Checklist Validation Task
+3. **Story Metadata:** Collect story properties:
+   - Priority: High/Medium/Low  
+   - Assignee: Usually 'dev'
+   - Estimated hours (optional)
 
-This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
+#### 3.2 Create Story Task via MCP Tools
 
-## Available Checklists
+**MCP Tool Usage:**
 
-If the user asks or does not specify a specific checklist, list the checklists available to the agent persona. If the task is being run not with a specific agent, tell the user to check the .bmad-core/checklists folder to select the appropriate one to run.
+1. **Create the Story:** Use `bmad_create_story` tool:
+   ```json
+   {
+     "epic_num": <current_epic_num>,
+     "title": "<story_title>", 
+     "description": "<detailed_description>",
+     "assignee": "dev",
+     "priority": "<HIGH/MEDIUM/LOW>"
+   }
+   ```
 
-## Instructions
+2. **Verify Creation:** Use `bmad_query_tasks` to confirm story was created:
+   ```json
+   {
+     "epic_num": <current_epic_num>,
+     "story_num": <next_story_num>
+   }
+   ```
 
-1. **Initial Assessment**
+**Enhanced Context Integration:**
+- Include relevant PRD sections in description
+- Reference architecture constraints and patterns
+- Note dependencies on previous stories
+- Add technical notes from architecture analysis
 
-   - If user or the task being run provides a checklist name:
-     - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
-     - If multiple matches found, ask user to clarify
-     - Load the appropriate checklist from .bmad-core/checklists/
-   - If no checklist specified:
-     - Ask the user which checklist they want to use
-     - Present the available options from the files in the checklists folder
-   - Confirm if they want to work through the checklist:
-     - Section by section (interactive mode - very time consuming)
-     - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
+### 4. Generate Story Document (Optional)
 
-2. **Document and Artifact Gathering**
+**File-Based Compatibility:**
 
-   - Each checklist will specify its required documents/artifacts at the beginning
-   - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
+If your project still uses file-based story management, you can optionally create a markdown file using the story template:
 
-3. **Checklist Processing**
+1. Load `story-tmpl.yaml` template from templates directory
+2. Populate with story data from MCP database  
+3. Save to configured `devStoryLocation`
 
-   If in interactive mode:
+**Template Variables:**
+- `epic_num`, `story_num`, `title`, `description`
+- `status`, `assignee`, `priority`
+- `acceptance_criteria`, `technical_notes`
+- `created_date`
 
-   - Work through each section of the checklist one at a time
-   - For each section:
-     - Review all items in the section following instructions for that section embedded in the checklist
-     - Check each item against the relevant documentation or artifacts as appropriate
-     - Present summary of findings for that section, highlighting warnings, errors and non applicable items (rationale for non-applicability).
-     - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
+### 5. Update Sprint Planning (If Applicable)
 
-   If in YOLO mode:
+**Sprint Management via MCP:**
 
-   - Process all sections at once
-   - Create a comprehensive report of all findings
-   - Present the complete analysis to the user
+1. **Check Active Sprint:** No specific MCP resource for sprints yet, but you can:
+   - Ask user if there's an active sprint
+   - If yes, note the sprint name for documentation
 
-4. **Validation Approach**
+2. **Story Assignment:** The story is already created in TODO status and ready for dev assignment
 
-   For each checklist item:
+3. **Capacity Planning:** Use project progress data to understand current workload
 
-   - Read and understand the requirement
-   - Look for evidence in the documentation that satisfies the requirement
-   - Consider both explicit mentions and implicit coverage
-   - Aside from this, follow all checklist llm instructions
-   - Mark items as:
-     - ✅ PASS: Requirement clearly met
-     - ❌ FAIL: Requirement not met or insufficient coverage
-     - ⚠️ PARTIAL: Some aspects covered but needs improvement
-     - N/A: Not applicable to this case
+### 6. Summary and Next Steps
 
-5. **Section Analysis**
+**Progress Summary via MCP Resources:**
 
-   For each section:
+1. **Display Story Creation Results:**
+   - Show created story: `Epic ${epic_num}.${story_num} - ${title}`
+   - Display task ID and status
+   - Show assignee and priority
 
-   - think step by step to calculate pass rate
-   - Identify common themes in failed items
-   - Provide specific recommendations for improvement
-   - In interactive mode, discuss findings with user
-   - Document any user decisions or explanations
+2. **Epic Progress Overview:** Use `bmad://epics/${epic_num}/progress` resource:
+   - Show total stories in epic
+   - Display completion percentage  
+   - List remaining work
 
-6. **Final Report**
+3. **Project Overview:** Use `bmad://project/progress` resource:
+   - Show overall project completion
+   - Display task breakdown by status
 
-   Prepare a summary that includes:
+**Next Steps:**
+1. Review story details with stakeholders  
+2. Assign to development agent for implementation
+3. Begin development workflow
+4. Track progress via MCP tools
 
-   - Overall checklist completion status
-   - Pass rates by section
-   - List of failed items with context
-   - Specific recommendations for improvement
-   - Any sections or items marked as N/A with justification
+## Enhanced Benefits
 
-## Checklist Execution Methodology
+### Real-time Insights
+- **Progress tracking**: Use `bmad://project/progress` for live completion percentages
+- **Dependency awareness**: Use `bmad_query_tasks` to see blocked or in-progress stories  
+- **Resource allocation**: See which agents are working on what via task assignments
 
-Each checklist now contains embedded LLM prompts and instructions that will:
+### Data Consistency  
+- **Structured storage**: SQLite database handles data integrity
+- **Audit trail**: Track who created/modified what and when via MCP tools
+- **Status synchronization**: Real-time status updates via `bmad_update_task_status`
 
-1. **Guide thorough thinking** - Prompts ensure deep analysis of each section
-2. **Request specific artifacts** - Clear instructions on what documents/access is needed
-3. **Provide contextual guidance** - Section-specific prompts for better validation
-4. **Generate comprehensive reports** - Final summary with detailed findings
+### Intelligent Planning
+- **Context awareness**: Access PRD and architecture via MCP resources
+- **Progress insights**: Epic and project progress via MCP resources  
+- **Task management**: Structured task creation and querying via MCP tools
 
-The LLM will:
+## MCP Tools Reference
 
-- Execute the complete checklist validation
-- Present a final report with pass/fail rates and key findings
-- Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-core/tasks/execute-checklist.md ====================
+### Available Tools:
+- `bmad_create_story` - Create new story/task
+- `bmad_update_task_status` - Update task status/assignee
+- `bmad_create_epic` - Create new epic  
+- `bmad_query_tasks` - Query tasks with filters
+- `bmad_get_project_progress` - Get project statistics
+- `bmad_create_document` - Create/update documents
+
+### Available Resources:
+- `bmad://project/info` - Project metadata
+- `bmad://project/progress` - Real-time progress stats
+- `bmad://project/prd` - Product Requirements Document
+- `bmad://project/architecture` - System Architecture
+- `bmad://tasks/all` - All tasks
+- `bmad://tasks/todo` - TODO tasks  
+- `bmad://tasks/in-progress` - Active tasks
+- `bmad://epics/<num>/tasks` - Tasks in specific epic
+- `bmad://epics/<num>/progress` - Epic progress stats
+
+## MCP Requirements
+
+If MCP tools are unavailable:
+1. Display error: "MCP tools required for story creation"
+2. Inform user that MCP server setup is needed for enhanced story management
+3. Provide instructions for enabling MCP server
+4. Do not proceed without MCP tools
+
+This ensures proper story tracking and management through the MCP database.
+==================== END: .bmad-core/tasks/create-next-story-mcp.md ====================
+
+==================== START: .bmad-core/tasks/execute-checklist-mcp.md ====================
+# Execute Checklist Task (MCP Enhanced)
+
+## Purpose
+
+MCP-enhanced checklist execution with real-time validation, progress tracking, and automated artifact linking. This version uses MCP tools to validate checklist items against current project state and maintain audit trails of checklist completion.
+
+## SEQUENTIAL Task Execution
+
+### 0. MCP Availability and Checklist Preparation
+
+**MCP Availability Check:**
+- Verify MCP tools are available for checklist validation
+- If MCP unavailable, fall back to manual checklist execution with warning
+- If MCP available, use enhanced workflow with real-time validation
+
+**Checklist Context Analysis:**
+1. Use `bmad_get_project_progress` to understand current project state
+2. Use `bmad_get_current_sprint` to get sprint context for relevant checklists
+3. Use `bmad_query_tasks` and `bmad_query_epics` for entity-specific checklists
+
+### 1. Checklist Initialization and Context Setup
+
+**Checklist Selection and Loading:**
+
+Interactive checklist selection:
+```
+Available Checklists:
+1. story-draft-checklist.md - Story creation validation
+2. story-dod-checklist.md - Story definition of done
+3. pm-checklist.md - Product management validation
+4. architect-checklist.md - Architecture review
+5. po-master-checklist.md - Product owner validation
+6. change-checklist.md - Change management process
+7. sprint-completion-checklist.md - Sprint retrospective
+
+Select checklist number: 
+Entity Context (if applicable): [epic/story/sprint ID]
+```
+
+**Context-Aware Checklist Enhancement:**
+
+Based on selected checklist and entity:
+1. **Story Checklists:** Use `bmad_query_tasks` to get story details for validation
+2. **Epic Checklists:** Use `bmad_query_epics` to get epic context
+3. **Sprint Checklists:** Use `bmad_get_current_sprint` for sprint-specific validation
+4. **Project Checklists:** Use `bmad_get_project_progress` for overall context
+
+### 2. MCP-Enhanced Checklist Execution
+
+**Real-Time Validation Checklist Processing:**
+
+For each checklist item:
+
+1. **Item Context Analysis:**
+   - Parse checklist item requirements
+   - Identify MCP queries needed for validation
+   - Gather relevant project data automatically
+
+2. **Automated Validation (Where Possible):**
+   ```
+   Checklist Item: "${checklist_item_text}"
+   
+   MCP Validation Status:
+   - Data Retrieved: ✅/❌
+   - Validation Result: ✅/❌/🔍 (needs review)
+   - Evidence: ${mcp_data_summary}
+   ```
+
+3. **Interactive Validation (Where Required):**
+   ```
+   Checklist Item: "${checklist_item_text}"
+   
+   Current Project State: ${relevant_mcp_data}
+   
+   Manual Validation Required:
+   - Review the above data
+   - Confirm compliance: [Y/N]
+   - Notes (if needed): ${user_notes}
+   ```
+
+4. **Progress Tracking:**
+   - Track completion status for each item
+   - Maintain validation evidence from MCP data
+   - Record any issues or blockers identified
+
+### 3. Checklist Validation Categories
+
+**Automated MCP Validations:**
+
+1. **Data Existence Checks:**
+   - Story exists in system: `bmad_query_tasks`
+   - Epic exists and has stories: `bmad_query_epics`
+   - Sprint is active: `bmad_get_current_sprint`
+   - Documents exist: Document queries
+
+2. **Data Completeness Checks:**
+   - Story has description: Validate via task query
+   - Epic has priority set: Validate via epic query
+   - Sprint has goal defined: Validate via sprint query
+   - Required fields populated: Field-specific validation
+
+3. **Relationship Validations:**
+   - Story assigned to epic: Cross-reference validation
+   - Story assigned to sprint: Sprint assignment check
+   - Document links exist: Link validation queries
+   - Dependencies properly set: Dependency validation
+
+**Interactive MCP-Assisted Validations:**
+
+1. **Quality Assessments:**
+   - Story acceptance criteria quality (show current criteria from MCP)
+   - Epic scope appropriateness (show epic details from MCP)
+   - Sprint goal achievability (show sprint progress from MCP)
+
+2. **Alignment Checks:**
+   - Story aligns with epic goals (show both for comparison)
+   - Epic aligns with project objectives (show project context)
+   - Sprint scope matches capacity (show current sprint data)
+
+### 4. Checklist Results and Documentation
+
+**MCP-Enhanced Results Summary:**
+
+1. **Checklist Completion Report:**
+   ```markdown
+   # Checklist Execution Report - ${checklist_name}
+   
+   ## Execution Context
+   - **Date**: ${execution_date}
+   - **Entity**: ${entity_type} ${entity_id}
+   - **Executor**: ${agent_name}
+   - **MCP Data Used**: ${mcp_queries_executed}
+   
+   ## Results Summary
+   - **Total Items**: ${total_items}
+   - **Passed**: ${passed_count} ✅
+   - **Failed**: ${failed_count} ❌
+   - **Needs Attention**: ${attention_count} 🔍
+   - **Not Applicable**: ${na_count} ⚪
+   
+   ## Detailed Results
+   ${item_by_item_results_with_mcp_evidence}
+   
+   ## Action Items
+   ${identified_action_items}
+   
+   ## MCP Data Evidence
+   ${relevant_mcp_data_snapshots}
+   ```
+
+2. **Store Checklist Results:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "checklist-results",
+     "title": "Checklist Results - ${checklist_name} - ${date}",
+     "content": "<checklist_report_markdown>",
+     "metadata": {
+       "checklist_type": "<checklist_name>",
+       "entity_type": "<entity_type>",
+       "entity_id": "<entity_id>",
+       "pass_rate": <percentage>,
+       "execution_date": "<date>"
+     }
+   }
+   ```
+
+### 5. Action Item Tracking and Follow-up
+
+**MCP-Enhanced Action Item Management:**
+
+1. **Action Item Creation:**
+   For each failed or attention-required checklist item:
+   ```json
+   {
+     "epic_num": <relevant_epic>,
+     "title": "Checklist Action: ${item_description}",
+     "description": "Address checklist item: ${item_text}\n\nEvidence: ${mcp_evidence}\n\nRequired Action: ${action_description}",
+     "assignee": "${responsible_agent}",
+     "priority": "HIGH"
+   }
+   ```
+
+2. **Link Action Items to Original Entity:**
+   ```json
+   {
+     "entity_type": "task",
+     "entity_id": "<action_item_id>",
+     "document_id": "<checklist_results_doc_id>",
+     "link_purpose": "checklist-followup"
+   }
+   ```
+
+### 6. Checklist Integration and Continuous Improvement
+
+**Checklist Pattern Analysis:**
+
+1. **Common Issue Identification:**
+   - Analyze historical checklist results
+   - Identify recurring failure patterns
+   - Suggest process improvements
+
+2. **Checklist Effectiveness Tracking:**
+   - Track checklist completion rates over time
+   - Monitor action item resolution rates
+   - Identify checklist items that need refinement
+
+**Integration with Development Flow:**
+
+1. **Pre-Development Checklists:**
+   - Validate story readiness before development
+   - Ensure epic completeness before story creation
+   - Confirm sprint readiness before sprint start
+
+2. **Post-Development Checklists:**
+   - Validate story completion before marking done
+   - Ensure epic closure criteria met
+   - Confirm sprint success criteria achieved
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_query_tasks` - Validate story-related checklist items
+- `bmad_query_epics` - Validate epic-related checklist items
+- `bmad_get_current_sprint` - Validate sprint-related checklist items
+- `bmad_get_project_progress` - Validate project-level checklist items
+- `bmad_create_document` - Store checklist results and reports
+- `bmad_create_story` - Create action items for failed checklist items
+- `bmad_link_entity_to_document` - Link results to relevant entities
+
+### Enhanced Resources:
+- `bmad://checklists/history` - Historical checklist execution data
+- `bmad://checklists/patterns` - Common failure pattern analysis
+- `bmad://project/quality-metrics` - Quality metrics derived from checklists
+
+## Critical Success Factors
+
+1. **Real-Time Validation:** Use MCP data for objective checklist validation
+2. **Evidence-Based Results:** Maintain clear evidence trail from MCP queries
+3. **Action Item Creation:** Convert failures into trackable action items
+4. **Continuous Improvement:** Analyze patterns for process enhancement
+5. **Integration:** Embed checklists into natural development workflow
+
+This MCP-enhanced approach ensures checklists are validated against real project data, results are properly documented, and follow-up actions are tracked through the project management system.
+==================== END: .bmad-core/tasks/execute-checklist-mcp.md ====================
 
 ==================== START: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
 # Create AI Frontend Prompt Task
@@ -1957,195 +2351,259 @@ Please provide:
 Would you like to proceed with documentation indexing? Please provide the required input above.
 ==================== END: .bmad-core/tasks/index-docs.md ====================
 
-==================== START: .bmad-core/tasks/shard-doc.md ====================
-# Document Sharding Task
+==================== START: .bmad-core/tasks/shard-doc-mcp.md ====================
+# Shard Document Task (MCP Enhanced)
 
 ## Purpose
 
-- Split a large document into multiple smaller documents based on level 2 sections
-- Create a folder structure to organize the sharded documents
-- Maintain all content integrity including code blocks, diagrams, and markdown formatting
+MCP-enhanced document sharding that breaks large documents into manageable, story-sized sections with automatic linking and context preservation. This version uses MCP tools to create structured document sections and maintain relationships between sharded content and development entities.
 
-## Primary Method: Automatic with markdown-tree
+## SEQUENTIAL Task Execution
 
-[[LLM: First, check if markdownExploder is set to true in .bmad-core/core-config.yaml. If it is, attempt to run the command: `md-tree explode {input file} {output path}`.
+### 0. MCP Availability and Document Analysis
 
-If the command succeeds, inform the user that the document has been sharded successfully and STOP - do not proceed further.
+**MCP Availability Check:**
+- Verify MCP tools are available for document management
+- If MCP unavailable, fall back to manual sharding with warning
+- If MCP available, use enhanced workflow with automated linking
 
-If the command fails (especially with an error indicating the command is not found or not available), inform the user: "The markdownExploder setting is enabled but the md-tree command is not available. Please either:
+**Document Context Analysis:**
+1. Use document queries to identify the document to be sharded
+2. Use `bmad_get_project_progress` to understand current project context
+3. Use `bmad_query_epics` to identify relevant epics for section assignment
 
-1. Install @kayvan/markdown-tree-parser globally with: `npm install -g @kayvan/markdown-tree-parser`
-2. Or set markdownExploder to false in .bmad-core/core-config.yaml
+### 1. Document Selection and Analysis
 
-**IMPORTANT: STOP HERE - do not proceed with manual sharding until one of the above actions is taken.**"
+**Interactive Document Selection:**
 
-If markdownExploder is set to false, inform the user: "The markdownExploder setting is currently false. For better performance and reliability, you should:
+```
+Document Sharding Process:
+Available Documents for Sharding:
+[List from document queries]
 
-1. Set markdownExploder to true in .bmad-core/core-config.yaml
-2. Install @kayvan/markdown-tree-parser globally with: `npm install -g @kayvan/markdown-tree-parser`
+Select document to shard: 
+Document Type: [PRD/Architecture/Technical Spec/Other]
+Sharding Purpose: [Story Creation/Epic Planning/Development Reference]
+```
 
-I will now proceed with the manual sharding process."
+**Document Structure Analysis:**
 
-Then proceed with the manual method below ONLY if markdownExploder is false.]]
+1. **Parse Document Sections:** Analyze document structure:
+   - Identify major sections and subsections
+   - Analyze content complexity and length
+   - Identify natural breaking points for sharding
 
-### Installation and Usage
+2. **Content Mapping:** Map content to development entities:
+   - Identify sections that map to specific epics
+   - Identify content that relates to specific stories
+   - Mark sections requiring development attention
 
-1. **Install globally**:
+### 2. Sharding Strategy Definition
 
-   ```bash
-   npm install -g @kayvan/markdown-tree-parser
+**MCP-Enhanced Sharding Plan:**
+
+1. **Sharding Approach Selection:**
+   ```
+   Sharding Strategy Options:
+   1. **Epic-Based Sharding**: One shard per epic with related content
+   2. **Story-Sized Sharding**: Small shards suitable for individual story creation
+   3. **Feature-Based Sharding**: Shards organized by functional areas
+   4. **Timeline-Based Sharding**: Shards organized by development phases
+   
+   Select strategy [1-4]: 
    ```
 
-2. **Use the explode command**:
+2. **Shard Size and Scope Definition:**
+   - Determine optimal shard size for development consumption
+   - Define shard overlap strategy for context preservation
+   - Plan shard naming and organization convention
 
-   ```bash
-   # For PRD
-   md-tree explode docs/prd.md docs/prd
+3. **Epic and Story Alignment:**
+   - Use `bmad_query_epics` to align shards with existing epics
+   - Plan new epic creation if shards reveal new scope areas
+   - Prepare shard-to-story mapping strategy
 
-   # For Architecture
-   md-tree explode docs/architecture.md docs/architecture
+### 3. Document Sharding Execution
 
-   # For any document
-   md-tree explode [source-document] [destination-folder]
-   ```
+**MCP-Enhanced Sharding Process:**
 
-3. **What it does**:
-   - Automatically splits the document by level 2 sections
-   - Creates properly named files
-   - Adjusts heading levels appropriately
-   - Handles all edge cases with code blocks and special markdown
+1. **Create Shard Documents:** For each identified shard:
 
-If the user has @kayvan/markdown-tree-parser installed, use it and skip the manual process below.
+```json
+{
+  "type": "document-shard",
+  "title": "${original_doc_title} - ${shard_name}",
+  "content": "${shard_content_with_context}",
+  "metadata": {
+    "parent_document": "${original_doc_id}",
+    "shard_index": ${shard_number},
+    "total_shards": ${total_shard_count},
+    "epic_alignment": "${target_epic_num}",
+    "shard_type": "${shard_category}"
+  }
+}
+```
 
----
-
-## Manual Method (if @kayvan/markdown-tree-parser is not available or user indicated manual method)
-
-### Task Instructions
-
-1. Identify Document and Target Location
-
-- Determine which document to shard (user-provided path)
-- Create a new folder under `docs/` with the same name as the document (without extension)
-- Example: `docs/prd.md` → create folder `docs/prd/`
-
-2. Parse and Extract Sections
-
-CRITICAL AEGNT SHARDING RULES:
-
-1. Read the entire document content
-2. Identify all level 2 sections (## headings)
-3. For each level 2 section:
-   - Extract the section heading and ALL content until the next level 2 section
-   - Include all subsections, code blocks, diagrams, lists, tables, etc.
-   - Be extremely careful with:
-     - Fenced code blocks (```) - ensure you capture the full block including closing backticks and account for potential misleading level 2's that are actually part of a fenced section example
-     - Mermaid diagrams - preserve the complete diagram syntax
-     - Nested markdown elements
-     - Multi-line content that might contain ## inside code blocks
-
-CRITICAL: Use proper parsing that understands markdown context. A ## inside a code block is NOT a section header.]]
-
-### 3. Create Individual Files
-
-For each extracted section:
-
-1. **Generate filename**: Convert the section heading to lowercase-dash-case
-
-   - Remove special characters
-   - Replace spaces with dashes
-   - Example: "## Tech Stack" → `tech-stack.md`
-
-2. **Adjust heading levels**:
-
-   - The level 2 heading becomes level 1 (# instead of ##) in the sharded new document
-   - All subsection levels decrease by 1:
-
-   ```txt
-     - ### → ##
-     - #### → ###
-     - ##### → ####
-     - etc.
-   ```
-
-3. **Write content**: Save the adjusted content to the new file
-
-### 4. Create Index File
-
-Create an `index.md` file in the sharded folder that:
-
-1. Contains the original level 1 heading and any content before the first level 2 section
-2. Lists all the sharded files with links:
+2. **Enhanced Shard Content Structure:**
 
 ```markdown
-# Original Document Title
+# ${shard_title}
 
-[Original introduction content if any]
+## Context from Parent Document
+**Source Document**: ${parent_document_title}
+**Related Sections**: ${related_section_references}
+**Epic Alignment**: Epic ${epic_num} - ${epic_title}
 
-## Sections
+## Shard Content
+${extracted_content_with_enhancements}
 
-- [Section Name 1](./section-name-1.md)
-- [Section Name 2](./section-name-2.md)
-- [Section Name 3](./section-name-3.md)
-  ...
+## Development Context
+**Implementation Priority**: ${priority_level}
+**Estimated Stories**: ${estimated_story_count}
+**Dependencies**: ${dependency_notes}
+**Technical Considerations**: ${technical_notes}
+
+## Story Creation Guidance
+${guidance_for_story_creation_from_this_shard}
+
+## Related Shards
+- Previous: ${previous_shard_reference}
+- Next: ${next_shard_reference}
+- Related: ${related_shard_references}
 ```
 
-### 5. Preserve Special Content
+3. **Automatic Shard Linking:** Link shards to project entities:
 
-1. **Code blocks**: Must capture complete blocks including:
-
-   ```language
-   content
-   ```
-
-2. **Mermaid diagrams**: Preserve complete syntax:
-
-   ```mermaid
-   graph TD
-   ...
-   ```
-
-3. **Tables**: Maintain proper markdown table formatting
-
-4. **Lists**: Preserve indentation and nesting
-
-5. **Inline code**: Preserve backticks
-
-6. **Links and references**: Keep all markdown links intact
-
-7. **Template markup**: If documents contain {{placeholders}} ,preserve exactly
-
-### 6. Validation
-
-After sharding:
-
-1. Verify all sections were extracted
-2. Check that no content was lost
-3. Ensure heading levels were properly adjusted
-4. Confirm all files were created successfully
-
-### 7. Report Results
-
-Provide a summary:
-
-```text
-Document sharded successfully:
-- Source: [original document path]
-- Destination: docs/[folder-name]/
-- Files created: [count]
-- Sections:
-  - section-name-1.md: "Section Title 1"
-  - section-name-2.md: "Section Title 2"
-  ...
+```json
+{
+  "entity_type": "epic",
+  "entity_id": "${target_epic_id}",
+  "document_id": "${shard_document_id}",
+  "link_purpose": "shard-reference"
+}
 ```
 
-## Important Notes
+### 4. Shard Validation and Enhancement
 
-- Never modify the actual content, only adjust heading levels
-- Preserve ALL formatting, including whitespace where significant
-- Handle edge cases like sections with code blocks containing ## symbols
-- Ensure the sharding is reversible (could reconstruct the original from shards)
-==================== END: .bmad-core/tasks/shard-doc.md ====================
+**MCP-Enhanced Shard Quality Assurance:**
+
+1. **Completeness Validation:**
+   - Verify all original content is captured across shards
+   - Check for gaps or overlaps in shard coverage
+   - Validate context preservation across shard boundaries
+
+2. **Development Readiness Assessment:**
+   - Assess each shard's readiness for story creation
+   - Identify shards needing additional context or clarification
+   - Validate shard size appropriateness for development consumption
+
+3. **Epic Alignment Validation:**
+   - Use `bmad_query_epics` to confirm shard-epic alignments
+   - Validate that shard content matches epic scope and goals
+   - Identify shards that might require new epic creation
+
+### 5. Shard Navigation and Management
+
+**Enhanced Shard Organization:**
+
+1. **Shard Index Creation:**
+
+```markdown
+# ${original_document_title} - Shard Index
+
+## Sharding Overview
+**Original Document**: ${original_doc_title}
+**Sharding Date**: ${sharding_date}
+**Total Shards**: ${total_count}
+**Sharding Strategy**: ${strategy_used}
+
+## Shard Directory
+${shard_list_with_descriptions_and_links}
+
+## Epic Mapping
+${shard_to_epic_mapping_table}
+
+## Development Status
+${shard_development_progress_tracking}
+```
+
+2. **Store Shard Index:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "shard-index",
+     "title": "${original_doc_title} - Shard Index",
+     "content": "<shard_index_markdown>",
+     "metadata": {
+       "parent_document": "${original_doc_id}",
+       "shard_count": ${total_shards},
+       "sharding_strategy": "${strategy}",
+       "created_date": "${date}"
+     }
+   }
+   ```
+
+### 6. Shard Integration with Development Workflow
+
+**Development-Ready Shard Handoff:**
+
+1. **Story Creation Preparation:**
+   - Mark shards ready for story creation
+   - Provide story creation guidance for each shard
+   - Link shards to appropriate agent workflows
+
+2. **Epic Enhancement:**
+   - Update existing epics with shard references
+   - Create new epics if shards reveal new scope areas
+   - Align epic priorities with shard development sequence
+
+3. **Sprint Planning Integration:**
+   - Prepare shards for sprint planning consumption
+   - Estimate story creation effort from shard complexity
+   - Plan shard-based development sequencing
+
+**Shard Completion Summary:**
+
+```
+✅ DOCUMENT SHARDING COMPLETED
+
+Original Document: ${original_document_title}
+Shards Created: ${shard_count}
+Epic Alignments: ${epic_alignment_count}
+Development-Ready Shards: ${ready_shard_count}
+
+Shard Index: ${shard_index_document_link}
+
+Next Actions:
+1. Use shards for story creation via SM agent
+2. Reference shards during epic planning
+3. Monitor shard-based development progress
+4. Update shard status as stories are completed
+```
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_create_document` - Create individual shard documents and index
+- `bmad_link_entity_to_document` - Link shards to epics and stories
+- `bmad_query_epics` - Align shards with existing epics
+- `bmad_get_project_progress` - Understand project context for sharding
+- Document queries - Access and analyze source documents
+
+### Enhanced Resources:
+- `bmad://documents/shards` - All document shards and their relationships
+- `bmad://epics/<num>/shards` - Shards associated with specific epics
+- `bmad://shards/<id>/stories` - Stories created from specific shards
+
+## Critical Success Factors
+
+1. **Context Preservation:** Maintain sufficient context in each shard for development use
+2. **Epic Alignment:** Ensure shards align with epic scope and development sequence
+3. **Development Readiness:** Size and structure shards for optimal story creation
+4. **Relationship Management:** Maintain clear links between shards and development entities
+5. **Navigation Support:** Provide clear index and navigation between related shards
+
+This MCP-enhanced approach ensures document sharding supports structured development workflows with proper tracking and relationship management throughout the development process.
+==================== END: .bmad-core/tasks/shard-doc-mcp.md ====================
 
 ==================== START: .bmad-core/templates/architecture-tmpl.yaml ====================
 template:
@@ -8174,7 +8632,7 @@ The BMad-Method is built around a modular architecture centered on the `bmad-cor
 BMad employs a sophisticated template system with three key components:
 
 1. **Template Format** (`utils/bmad-doc-template.md`): Defines markup language for variable substitution and AI processing directives from yaml templates
-2. **Document Creation** (`tasks/create-doc.md`): Orchestrates template selection and user interaction to transform yaml spec to final markdown output
+2. **Document Creation** (`tasks/create-doc-mcp.md`): Orchestrates template selection and user interaction to transform yaml spec to final markdown output with MCP storage
 3. **Advanced Elicitation** (`tasks/advanced-elicitation.md`): Provides interactive refinement through structured brainstorming
 
 ### Technical Preferences Integration

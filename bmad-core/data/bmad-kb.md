@@ -404,7 +404,7 @@ The BMad-Method is built around a modular architecture centered on the `bmad-cor
 BMad employs a sophisticated template system with three key components:
 
 1. **Template Format** (`utils/bmad-doc-template.md`): Defines markup language for variable substitution and AI processing directives from yaml templates
-2. **Document Creation** (`tasks/create-doc.md`): Orchestrates template selection and user interaction to transform yaml spec to final markdown output
+2. **Document Creation** (`tasks/create-doc-mcp.md`): Orchestrates template selection and user interaction to transform yaml spec to final markdown output with MCP storage
 3. **Advanced Elicitation** (`tasks/advanced-elicitation.md`): Provides interactive refinement through structured brainstorming
 
 ### Technical Preferences Integration

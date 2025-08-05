@@ -1,0 +1,63 @@
+# Sprint Template
+# Used for creating sprint documents and plans
+
+sprint:
+  name: "${sprint_name}"
+  goal: "${sprint_goal}"
+  start_date: "${start_date}"
+  end_date: "${end_date}"
+  duration: "${duration_weeks} weeks"
+  status: "ACTIVE"
+
+planning:
+  target_epics: ${target_epics}
+  story_targets: ${story_targets}
+  success_criteria:
+    - "${success_criteria_1}"
+    - "${success_criteria_2}"
+    - "${success_criteria_3}"
+  
+  estimated_capacity: "${estimated_stories} stories"
+  risk_factors:
+    - "${risk_1}"
+    - "${risk_2}"
+  
+  definition_of_done:
+    - All sprint goal objectives met
+    - Target stories completed to acceptance criteria
+    - Code reviewed and tested
+    - Documentation updated
+    - Demo ready for stakeholders
+
+tracking:
+  metrics:
+    - Story completion rate
+    - Sprint velocity (stories/week)
+    - Goal achievement percentage
+    - Quality metrics (bugs, rework)
+  
+  daily_standup_focus:
+    - Progress toward sprint goal
+    - Impediments and blockers
+    - Story completion status
+    - Team coordination needs
+
+retrospective_template:
+  what_went_well: []
+  what_could_improve: []
+  action_items: []
+  process_changes: []
+  lessons_learned: ""
+
+sprint_review:
+  demo_agenda:
+    - Sprint goal review
+    - Completed story demonstrations
+    - Metrics and velocity review
+    - Stakeholder feedback collection
+  
+  deliverables:
+    - Working software increments
+    - Updated documentation
+    - Sprint metrics report
+    - Next sprint planning input

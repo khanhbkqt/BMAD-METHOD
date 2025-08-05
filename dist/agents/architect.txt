@@ -81,18 +81,18 @@ commands:
   - create-front-end-architecture: use create-doc with front-end-architecture-tmpl.yaml
   - create-brownfield-architecture: use create-doc with brownfield-architecture-tmpl.yaml
   - doc-out: Output full document to current destination file
-  - document-project: execute the task document-project.md
+  - document-project: execute the task document-project-mcp.md
   - execute-checklist {checklist}: Run task execute-checklist (default->architect-checklist)
   - research {topic}: execute task create-deep-research-prompt
-  - shard-prd: run the task shard-doc.md for the provided architecture.md (ask if not found)
+  - shard-prd: run the task shard-doc-mcp.md for the provided architecture.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Architect, and then abandon inhabiting this persona
 dependencies:
   tasks:
-    - create-doc.md
-    - create-deep-research-prompt.md
-    - document-project.md
-    - execute-checklist.md
+    - create-doc-mcp.md
+    - create-deep-research-prompt-mcp.md
+    - document-project-mcp.md
+    - execute-checklist-mcp.md
   templates:
     - architecture-tmpl.yaml
     - front-end-architecture-tmpl.yaml
@@ -105,841 +105,627 @@ dependencies:
 ```
 ==================== END: .bmad-core/agents/architect.md ====================
 
-==================== START: .bmad-core/tasks/create-doc.md ====================
-# Create Document from Template (YAML Driven)
+==================== START: .bmad-core/tasks/create-doc-mcp.md ====================
+# Create Document from Template (MCP Enhanced)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
 
 **THIS IS AN EXECUTABLE WORKFLOW - NOT REFERENCE MATERIAL**
 
-When this task is invoked:
+This MCP-enhanced version provides structured document storage and tracking with interactive workflow requirements.
 
-1. **DISABLE ALL EFFICIENCY OPTIMIZATIONS** - This workflow requires full user interaction
-2. **MANDATORY STEP-BY-STEP EXECUTION** - Each section must be processed sequentially with user feedback
-3. **ELICITATION IS REQUIRED** - When `elicit: true`, you MUST use the 1-9 format and wait for user response
-4. **NO SHORTCUTS ALLOWED** - Complete documents cannot be created without following this workflow
+## MCP Availability Check
 
-**VIOLATION INDICATOR:** If you create a complete document without user interaction, you have violated this workflow.
+**Initial Setup:**
+Ask the user if they have MCP tools available. If they respond yes, use MCP-enhanced workflow. If no, inform the user that MCP tools are required for this enhanced workflow.
 
-## Critical: Template Discovery
+## MCP-Enhanced Document Creation Flow
 
-If a YAML Template has not been provided, list all templates from .bmad-core/templates or ask the user to provide another.
+### 0. MCP Context Setup
 
-## CRITICAL: Mandatory Elicitation Format
+**Project Context Loading:**
+1. Use `bmad://project/info` resource to get project metadata
+2. Check if project has existing documents of the same type
+3. Use `bmad_create_document` tool for structured storage
 
-**When `elicit: true`, this is a HARD STOP requiring user interaction:**
+### 1. Template Discovery and Document Planning
 
-**YOU MUST:**
+**Enhanced Template Selection:**
+- Load template from traditional file system (templates still file-based)
+- Use `bmad://project/info` to understand project context for template customization
+- Check for existing similar documents via MCP resources
 
-1. Present section content
-2. Provide detailed rationale (explain trade-offs, assumptions, decisions made)
-3. **STOP and present numbered options 1-9:**
-   - **Option 1:** Always "Proceed to next section"
-   - **Options 2-9:** Select 8 methods from data/elicitation-methods
-   - End with: "Select 1-9 or just type your question/feedback:"
-4. **WAIT FOR USER RESPONSE** - Do not proceed until user selects option or provides feedback
+**Document Initialization:**
+1. **Document Metadata Setup:**
+   ```json
+   {
+     "type": "prd|architecture|epic|story",
+     "title": "<document_title>",
+     "status": "DRAFT",
+     "version": "1.0"
+   }
+   ```
 
-**WORKFLOW VIOLATION:** Creating content for elicit=true sections without user interaction violates this task.
+2. **MCP Document Creation:** Use `bmad_create_document` tool:
+   ```json
+   {
+     "type": "<doc_type>",
+     "title": "<document_title>", 
+     "content": "<initial_content>",
+     "status": "DRAFT"
+   }
+   ```
 
-**NEVER ask yes/no questions or use any other format.**
+### 2. Interactive Section Processing
 
-## Processing Flow
+**Enhanced Section Workflow:**
 
-1. **Parse YAML template** - Load template metadata and sections
-2. **Set preferences** - Show current mode (Interactive), confirm output file
-3. **Process each section:**
-   - Skip if condition unmet
-   - Check agent permissions (owner/editors) - note if section is restricted to specific agents
-   - Draft content using section instruction
-   - Present content + detailed rationale
-   - **IF elicit: true** → MANDATORY 1-9 options format
-   - Save to file if possible
-4. **Continue until complete**
+**For Each Template Section:**
 
-## Detailed Rationale Requirements
+1. **Context Enhancement:** Before processing section, gather relevant context:
+   - Use `bmad://project/prd` or `bmad://project/architecture` to reference existing docs
+   - Use `bmad://project/progress` to understand current project state
+   - Use `bmad_query_tasks` to understand implementation context
 
-When presenting section content, ALWAYS include rationale that explains:
+2. **Interactive Processing (Maintaining Original Requirements):**
+   - Draft content using section instruction + MCP context
+   - Present content + detailed rationale (including MCP insights)
+   - **IF elicit: true** → MANDATORY 1-9 options format (unchanged from original)
+   - Wait for user response and process feedback
 
-- Trade-offs and choices made (what was chosen over alternatives and why)
-- Key assumptions made during drafting
-- Interesting or questionable decisions that need user attention
-- Areas that might need validation
+3. **MCP Storage:** After each section is approved:
+   - Update document content via `bmad_create_document` tool
+   - Maintain version history and change tracking
+   - Store section metadata for future reference
 
-## Elicitation Results Flow
+### 3. Enhanced Rationale with MCP Insights
 
-After user selects elicitation method (2-9):
+**When presenting section content, include:**
 
-1. Execute method from data/elicitation-methods
-2. Present results with insights
-3. Offer options:
-   - **1. Apply changes and update section**
-   - **2. Return to elicitation menu**
-   - **3. Ask any questions or engage further with this elicitation**
+- **Traditional rationale** (trade-offs, assumptions, decisions)
+- **Project context insights** from `bmad://project/info`
+- **Cross-reference insights** from existing documents
+- **Implementation readiness** based on current project progress
+- **Dependency analysis** from task database
 
-## Agent Permissions
+**Example Enhanced Rationale:**
+```
+SECTION: Product Overview
+CONTENT: [Generated content]
 
-When processing sections with agent permission fields:
+RATIONALE:
+- Trade-offs: Chose mobile-first approach over desktop due to user research
+- Assumptions: Assuming React/Node.js stack based on project architecture
+- MCP Insights: Project is 45% complete with 3 active epics in progress
+- Cross-references: Aligns with existing architecture document section 3.2
+- Dependencies: No blocking tasks for this feature scope
 
-- **owner**: Note which agent role initially creates/populates the section
-- **editors**: List agent roles allowed to modify the section
-- **readonly**: Mark sections that cannot be modified after creation
+[Standard 1-9 elicitation options...]
+```
 
-**For sections with restricted access:**
+### 4. Document Completion and Storage
 
-- Include a note in the generated document indicating the responsible agent
-- Example: "_(This section is owned by dev-agent and can only be modified by dev-agent)_"
+**MCP-Enhanced Completion:**
 
-## YOLO Mode
+1. **Final Document Assembly:**
+   - Compile all sections into complete document
+   - Update document status from DRAFT to FINAL
+   - Store complete document via `bmad_create_document`
 
-User can type `#yolo` to toggle to YOLO mode (process all sections at once).
+2. **Cross-Reference Updates:**
+   - Link to related documents in project database
+   - Update project metadata if this is a primary document (PRD/Architecture)
+   - Create any necessary epic records if document defines epics
 
-## CRITICAL REMINDERS
+3. **File System Sync:** 
+   - Save document to traditional file location for backwards compatibility
+   - Maintain both MCP database and file system versions
 
-**❌ NEVER:**
+### 5. Project Integration
 
-- Ask yes/no questions for elicitation
-- Use any format other than 1-9 numbered options
-- Create new elicitation methods
+**Enhanced Project Workflow:**
 
-**✅ ALWAYS:**
+**For PRD Documents:**
+1. Use `bmad_create_document` with type="prd"
+2. Extract and create epic records using `bmad_create_epic`
+3. Update project metadata to reference new PRD
 
-- Use exact 1-9 format when elicit: true
-- Select options 2-9 from data/elicitation-methods only
-- Provide detailed rationale explaining decisions
-- End with "Select 1-9 or just type your question/feedback:"
-==================== END: .bmad-core/tasks/create-doc.md ====================
+**For Architecture Documents:**
+1. Use `bmad_create_document` with type="architecture" 
+2. Update project technical constraints and specifications
+3. Link to relevant epics and stories for implementation tracking
 
-==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
-# Create Deep Research Prompt Task
+**For Epic/Story Documents:**
+1. Create structured epic/story records in database
+2. Link to parent PRD or requirements documents
+3. Enable tracking and progress monitoring
 
-This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
+### 6. Enhanced Benefits
+
+**MCP Integration Advantages:**
+
+1. **Document Versioning:** Automatic version tracking and history
+2. **Cross-Reference Integrity:** Links between documents maintained automatically
+3. **Progress Tracking:** Document creation integrated with project progress
+4. **Search and Discovery:** Documents accessible via MCP resources
+5. **Collaborative Updates:** Multiple agents can reference and update documents
+
+**Real-Time Context:**
+- **Live Progress Data:** Access current sprint/epic progress during document creation
+- **Implementation Feedback:** Reference actual development progress when planning
+- **Resource Availability:** Check what components/features already exist
+
+## Elicitation with MCP Context
+
+**Enhanced Elicitation Methods:**
+
+When user selects elicitation options 2-9, enhance with MCP data:
+
+- **Stakeholder Analysis:** Include current project stakeholders from MCP
+- **Risk Assessment:** Factor in current project risks and blockers from task database
+- **Feasibility Check:** Cross-reference with current architecture and capabilities
+- **Impact Analysis:** Consider effects on existing epics and stories
+- **Timeline Estimation:** Use historical project data for realistic planning
+
+## Fallback Strategy
+
+**If MCP tools unavailable:**
+1. Display warning: "MCP tools not available, document creation requires MCP server"
+2. Inform user that MCP server setup is required for document management
+3. Provide instructions for enabling MCP server
+4. Do not proceed without MCP tools
+
+**MCP Requirements:**
+- All documents created in MCP database with optional file export
+- MCP server must be running for enhanced document management
+- Enhanced features require MCP integration
+
+## CRITICAL WORKFLOW REQUIREMENTS
+
+**Core workflow requirements:**
+
+1. **MANDATORY ELICITATION FORMAT** - 1-9 numbered options when elicit=true
+2. **NO SHORTCUTS** - Full user interaction required for elicit sections
+3. **SEQUENTIAL PROCESSING** - Each section processed step-by-step
+4. **DETAILED RATIONALE** - Explain all trade-offs and decisions
+
+**MCP enhancements supplement but do not replace these core requirements.**
+
+## MCP Tools Reference
+
+**Available for Document Creation:**
+- `bmad_create_document` - Store documents in database
+- `bmad_create_epic` - Create epic records from PRD
+- `bmad://project/info` - Access project context
+- `bmad://project/prd` - Reference existing PRD
+- `bmad://project/architecture` - Reference existing architecture
+- `bmad://project/progress` - Get current project status
+==================== END: .bmad-core/tasks/create-doc-mcp.md ====================
+
+==================== START: .bmad-core/tasks/create-deep-research-prompt-mcp.md ====================
+# Create Deep Research Prompt Task (MCP Enhanced)
 
 ## Purpose
 
-Generate well-structured research prompts that:
+MCP-enhanced research prompt generation with project context integration, real-time data validation, and structured research output templates.
 
-- Define clear research objectives and scope
-- Specify appropriate research methodologies
-- Outline expected deliverables and formats
-- Guide systematic investigation of complex topics
-- Ensure actionable insights are captured
+## SEQUENTIAL Task Execution
 
-## Research Type Selection
+### 0. MCP Availability and Project Context
 
-CRITICAL: First, help the user select the most appropriate research focus based on their needs and any input documents they've provided.
+**MCP Availability Check:**
+- Verify MCP tools are available for context-aware research
+- If MCP unavailable, fall back to generic prompt generation with warning
+- If MCP available, use enhanced workflow with project data integration
 
-### 1. Research Focus Options
+**Project Context Analysis:**
+1. Use `bmad_get_project_progress` to understand current project state
+2. Use `bmad_query_epics` to identify research alignment opportunities
+3. Use document queries to review existing research and documentation
 
-Present these numbered options to the user:
+### 1. Research Topic Definition and Scoping
 
-1. **Product Validation Research**
+**Interactive Research Scoping:**
 
-   - Validate product hypotheses and market fit
-   - Test assumptions about user needs and solutions
-   - Assess technical and business feasibility
-   - Identify risks and mitigation strategies
+```
+Research Prompt Generation:
+1. Research Topic: ${topic_description}
+2. Research Purpose: [Market Analysis/Technical Investigation/Competitive Analysis/User Research]
+3. Project Context: [How does this research support current project goals?]
+4. Expected Output Format: [Report/Presentation/Data Analysis/Recommendations]
+5. Timeline: [Research completion timeframe]
+```
 
-2. **Market Opportunity Research**
+**MCP-Enhanced Context Integration:**
+- Align research scope with current epic priorities
+- Integrate existing project knowledge to avoid duplication
+- Reference related documentation for context building
 
-   - Analyze market size and growth potential
-   - Identify market segments and dynamics
-   - Assess market entry strategies
-   - Evaluate timing and market readiness
+### 2. Generate Comprehensive Research Prompt
 
-3. **User & Customer Research**
-
-   - Deep dive into user personas and behaviors
-   - Understand jobs-to-be-done and pain points
-   - Map customer journeys and touchpoints
-   - Analyze willingness to pay and value perception
-
-4. **Competitive Intelligence Research**
-
-   - Detailed competitor analysis and positioning
-   - Feature and capability comparisons
-   - Business model and strategy analysis
-   - Identify competitive advantages and gaps
-
-5. **Technology & Innovation Research**
-
-   - Assess technology trends and possibilities
-   - Evaluate technical approaches and architectures
-   - Identify emerging technologies and disruptions
-   - Analyze build vs. buy vs. partner options
-
-6. **Industry & Ecosystem Research**
-
-   - Map industry value chains and dynamics
-   - Identify key players and relationships
-   - Analyze regulatory and compliance factors
-   - Understand partnership opportunities
-
-7. **Strategic Options Research**
-
-   - Evaluate different strategic directions
-   - Assess business model alternatives
-   - Analyze go-to-market strategies
-   - Consider expansion and scaling paths
-
-8. **Risk & Feasibility Research**
-
-   - Identify and assess various risk factors
-   - Evaluate implementation challenges
-   - Analyze resource requirements
-   - Consider regulatory and legal implications
-
-9. **Custom Research Focus**
-
-   - User-defined research objectives
-   - Specialized domain investigation
-   - Cross-functional research needs
-
-### 2. Input Processing
-
-**If Project Brief provided:**
-
-- Extract key product concepts and goals
-- Identify target users and use cases
-- Note technical constraints and preferences
-- Highlight uncertainties and assumptions
-
-**If Brainstorming Results provided:**
-
-- Synthesize main ideas and themes
-- Identify areas needing validation
-- Extract hypotheses to test
-- Note creative directions to explore
-
-**If Market Research provided:**
-
-- Build on identified opportunities
-- Deepen specific market insights
-- Validate initial findings
-- Explore adjacent possibilities
-
-**If Starting Fresh:**
-
-- Gather essential context through questions
-- Define the problem space
-- Clarify research objectives
-- Establish success criteria
-
-## Process
-
-### 3. Research Prompt Structure
-
-CRITICAL: collaboratively develop a comprehensive research prompt with these components.
-
-#### A. Research Objectives
-
-CRITICAL: collaborate with the user to articulate clear, specific objectives for the research.
-
-- Primary research goal and purpose
-- Key decisions the research will inform
-- Success criteria for the research
-- Constraints and boundaries
-
-#### B. Research Questions
-
-CRITICAL: collaborate with the user to develop specific, actionable research questions organized by theme.
-
-**Core Questions:**
-
-- Central questions that must be answered
-- Priority ranking of questions
-- Dependencies between questions
-
-**Supporting Questions:**
-
-- Additional context-building questions
-- Nice-to-have insights
-- Future-looking considerations
-
-#### C. Research Methodology
-
-**Data Collection Methods:**
-
-- Secondary research sources
-- Primary research approaches (if applicable)
-- Data quality requirements
-- Source credibility criteria
-
-**Analysis Frameworks:**
-
-- Specific frameworks to apply
-- Comparison criteria
-- Evaluation methodologies
-- Synthesis approaches
-
-#### D. Output Requirements
-
-**Format Specifications:**
-
-- Executive summary requirements
-- Detailed findings structure
-- Visual/tabular presentations
-- Supporting documentation
-
-**Key Deliverables:**
-
-- Must-have sections and insights
-- Decision-support elements
-- Action-oriented recommendations
-- Risk and uncertainty documentation
-
-### 4. Prompt Generation
-
-**Research Prompt Template:**
+**MCP-Enhanced Research Prompt Creation:**
 
 ```markdown
-## Research Objective
+# Deep Research Prompt: ${topic_title}
 
-[Clear statement of what this research aims to achieve]
+## Research Context
+**Project Integration**: ${project_context_from_mcp}
+**Current Epic Focus**: ${relevant_epic_context}
+**Existing Knowledge**: ${related_document_summary}
 
-## Background Context
-
-[Relevant information from project brief, brainstorming, or other inputs]
+## Research Objectives
+${detailed_research_objectives}
 
 ## Research Questions
-
-### Primary Questions (Must Answer)
-
-1. [Specific, actionable question]
-2. [Specific, actionable question]
-   ...
-
-### Secondary Questions (Nice to Have)
-
-1. [Supporting question]
-2. [Supporting question]
-   ...
-
-## Research Methodology
-
-### Information Sources
-
-- [Specific source types and priorities]
-
-### Analysis Frameworks
-
-- [Specific frameworks to apply]
-
-### Data Requirements
-
-- [Quality, recency, credibility needs]
+${structured_research_questions}
 
 ## Expected Deliverables
+${output_specifications}
 
-### Executive Summary
-
-- Key findings and insights
-- Critical implications
-- Recommended actions
-
-### Detailed Analysis
-
-[Specific sections needed based on research type]
-
-### Supporting Materials
-
-- Data tables
-- Comparison matrices
-- Source documentation
+## Research Methodology
+${recommended_research_approach}
 
 ## Success Criteria
-
-[How to evaluate if research achieved its objectives]
-
-## Timeline and Priority
-
-[If applicable, any time constraints or phasing]
+${research_success_metrics}
 ```
 
-### 5. Review and Refinement
+### 3. Store and Link Research Prompt
 
-1. **Present Complete Prompt**
+**Store Research Prompt:** Use `bmad_create_document`:
+```json
+{
+  "type": "research-prompt",
+  "title": "Research Prompt - ${topic_title}",
+  "content": "<research_prompt_markdown>",
+  "metadata": {
+    "research_type": "${research_type}",
+    "target_epic": "${epic_num}",
+    "expected_timeline": "${timeline}"
+  }
+}
+```
 
-   - Show the full research prompt
-   - Explain key elements and rationale
-   - Highlight any assumptions made
+## MCP Tools Reference
 
-2. **Gather Feedback**
+### Required Tools:
+- `bmad_get_project_progress` - Project context for research alignment
+- `bmad_query_epics` - Epic alignment for research focus
+- `bmad_create_document` - Store research prompts and results
+- Document queries - Review existing research and documentation
 
-   - Are the objectives clear and correct?
-   - Do the questions address all concerns?
-   - Is the scope appropriate?
-   - Are output requirements sufficient?
+This MCP-enhanced approach ensures research prompts are contextually relevant to current project needs and properly integrated with existing project knowledge.
+==================== END: .bmad-core/tasks/create-deep-research-prompt-mcp.md ====================
 
-3. **Refine as Needed**
-   - Incorporate user feedback
-   - Adjust scope or focus
-   - Add missing elements
-   - Clarify ambiguities
-
-### 6. Next Steps Guidance
-
-**Execution Options:**
-
-1. **Use with AI Research Assistant**: Provide this prompt to an AI model with research capabilities
-2. **Guide Human Research**: Use as a framework for manual research efforts
-3. **Hybrid Approach**: Combine AI and human research using this structure
-
-**Integration Points:**
-
-- How findings will feed into next phases
-- Which team members should review results
-- How to validate findings
-- When to revisit or expand research
-
-## Important Notes
-
-- The quality of the research prompt directly impacts the quality of insights gathered
-- Be specific rather than general in research questions
-- Consider both current state and future implications
-- Balance comprehensiveness with focus
-- Document assumptions and limitations clearly
-- Plan for iterative refinement based on initial findings
-==================== END: .bmad-core/tasks/create-deep-research-prompt.md ====================
-
-==================== START: .bmad-core/tasks/document-project.md ====================
-# Document an Existing Project
+==================== START: .bmad-core/tasks/document-project-mcp.md ====================
+# Document Project Task (MCP Enhanced)
 
 ## Purpose
 
-Generate comprehensive documentation for existing projects optimized for AI development agents. This task creates structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase.
+MCP-enhanced project documentation with real-time data integration, automated cross-referencing, and comprehensive project state capture using structured MCP queries.
 
-## Task Instructions
+## SEQUENTIAL Task Execution
 
-### 1. Initial Project Analysis
+### 0. MCP Availability and Project State Analysis
 
-**CRITICAL:** First, check if a PRD or requirements document exists in context. If yes, use it to focus your documentation efforts on relevant areas only.
+**MCP Availability Check:**
+- Verify MCP tools are available for comprehensive project analysis
+- If MCP unavailable, fall back to manual documentation with warning
+- If MCP available, use enhanced workflow with real-time data integration
 
-**IF PRD EXISTS**:
+**Project State Baseline:**
+1. Use `bmad_get_project_progress` to capture current project status
+2. Use `bmad_query_epics` to document all epics and their status
+3. Use `bmad_query_tasks` to analyze story completion patterns
+4. Use `bmad_get_current_sprint` to document active sprint context
 
-- Review the PRD to understand what enhancement/feature is planned
-- Identify which modules, services, or areas will be affected
-- Focus documentation ONLY on these relevant areas
-- Skip unrelated parts of the codebase to keep docs lean
+### 1. Comprehensive Project Documentation Generation
 
-**IF NO PRD EXISTS**:
-Ask the user:
+**MCP-Enhanced Project Documentation:**
 
-"I notice you haven't provided a PRD or requirements document. To create more focused and useful documentation, I recommend one of these options:
+1. **Project Overview Section:**
+   ```markdown
+   # Project Documentation - ${project_name}
+   
+   ## Project Status (Real-Time MCP Data)
+   - **Overall Completion**: ${completion_percentage}%
+   - **Total Epics**: ${epic_count}
+   - **Total Stories**: ${story_count}
+   - **Active Sprint**: ${current_sprint_name}
+   - **Documentation Date**: ${current_date}
+   
+   ## Epic Status Summary
+   ${epic_status_table_from_mcp}
+   
+   ## Recent Progress
+   ${recent_activity_from_mcp_data}
+   ```
 
-1. **Create a PRD first** - Would you like me to help create a brownfield PRD before documenting? This helps focus documentation on relevant areas.
+2. **Store Project Documentation:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "project-documentation",
+     "title": "Project Documentation - ${project_name}",
+     "content": "<comprehensive_project_docs_markdown>",
+     "metadata": {
+       "documentation_date": "${date}",
+       "project_completion": ${completion_percentage},
+       "epic_count": ${epic_count},
+       "story_count": ${story_count}
+     }
+   }
+   ```
 
-2. **Provide existing requirements** - Do you have a requirements document, epic, or feature description you can share?
+### 2. Automated Cross-Reference Generation
 
-3. **Describe the focus** - Can you briefly describe what enhancement or feature you're planning? For example:
-   - 'Adding payment processing to the user service'
-   - 'Refactoring the authentication module'
-   - 'Integrating with a new third-party API'
+**MCP-Enhanced Cross-Referencing:**
 
-4. **Document everything** - Or should I proceed with comprehensive documentation of the entire codebase? (Note: This may create excessive documentation for large projects)
+1. **Link Documentation to All Project Entities:**
+   - Link to all epics via `bmad_link_entity_to_document`
+   - Reference key stories and milestones
+   - Connect to architectural decisions and technical documentation
 
-Please let me know your preference, or I can proceed with full documentation if you prefer."
+2. **Generate Entity Relationship Map:**
+   - Epic to story mappings from MCP data
+   - Document to entity relationship matrix
+   - Progress tracking cross-references
 
-Based on their response:
+## MCP Tools Reference
 
-- If they choose option 1-3: Use that context to focus documentation
-- If they choose option 4 or decline: Proceed with comprehensive analysis below
+### Required Tools:
+- `bmad_get_project_progress` - Real-time project status
+- `bmad_query_epics` - Epic documentation and status
+- `bmad_query_tasks` - Story analysis and completion tracking
+- `bmad_create_document` - Store comprehensive documentation
+- `bmad_link_entity_to_document` - Cross-reference project entities
 
-Begin by conducting analysis of the existing project. Use available tools to:
+This MCP-enhanced approach provides living project documentation that stays current with real project data and maintains comprehensive cross-references to all project entities.
+==================== END: .bmad-core/tasks/document-project-mcp.md ====================
 
-1. **Project Structure Discovery**: Examine the root directory structure, identify main folders, and understand the overall organization
-2. **Technology Stack Identification**: Look for package.json, requirements.txt, Cargo.toml, pom.xml, etc. to identify languages, frameworks, and dependencies
-3. **Build System Analysis**: Find build scripts, CI/CD configurations, and development commands
-4. **Existing Documentation Review**: Check for README files, docs folders, and any existing documentation
-5. **Code Pattern Analysis**: Sample key files to understand coding patterns, naming conventions, and architectural approaches
+==================== START: .bmad-core/tasks/execute-checklist-mcp.md ====================
+# Execute Checklist Task (MCP Enhanced)
 
-Ask the user these elicitation questions to better understand their needs:
+## Purpose
 
-- What is the primary purpose of this project?
-- Are there any specific areas of the codebase that are particularly complex or important for agents to understand?
-- What types of tasks do you expect AI agents to perform on this project? (e.g., bug fixes, feature additions, refactoring, testing)
-- Are there any existing documentation standards or formats you prefer?
-- What level of technical detail should the documentation target? (junior developers, senior developers, mixed team)
-- Is there a specific feature or enhancement you're planning? (This helps focus documentation)
+MCP-enhanced checklist execution with real-time validation, progress tracking, and automated artifact linking. This version uses MCP tools to validate checklist items against current project state and maintain audit trails of checklist completion.
 
-### 2. Deep Codebase Analysis
+## SEQUENTIAL Task Execution
 
-CRITICAL: Before generating documentation, conduct extensive analysis of the existing codebase:
+### 0. MCP Availability and Checklist Preparation
 
-1. **Explore Key Areas**:
-   - Entry points (main files, index files, app initializers)
-   - Configuration files and environment setup
-   - Package dependencies and versions
-   - Build and deployment configurations
-   - Test suites and coverage
+**MCP Availability Check:**
+- Verify MCP tools are available for checklist validation
+- If MCP unavailable, fall back to manual checklist execution with warning
+- If MCP available, use enhanced workflow with real-time validation
 
-2. **Ask Clarifying Questions**:
-   - "I see you're using [technology X]. Are there any custom patterns or conventions I should document?"
-   - "What are the most critical/complex parts of this system that developers struggle with?"
-   - "Are there any undocumented 'tribal knowledge' areas I should capture?"
-   - "What technical debt or known issues should I document?"
-   - "Which parts of the codebase change most frequently?"
+**Checklist Context Analysis:**
+1. Use `bmad_get_project_progress` to understand current project state
+2. Use `bmad_get_current_sprint` to get sprint context for relevant checklists
+3. Use `bmad_query_tasks` and `bmad_query_epics` for entity-specific checklists
 
-3. **Map the Reality**:
-   - Identify ACTUAL patterns used (not theoretical best practices)
-   - Find where key business logic lives
-   - Locate integration points and external dependencies
-   - Document workarounds and technical debt
-   - Note areas that differ from standard patterns
+### 1. Checklist Initialization and Context Setup
 
-**IF PRD PROVIDED**: Also analyze what would need to change for the enhancement
+**Checklist Selection and Loading:**
 
-### 3. Core Documentation Generation
+Interactive checklist selection:
+```
+Available Checklists:
+1. story-draft-checklist.md - Story creation validation
+2. story-dod-checklist.md - Story definition of done
+3. pm-checklist.md - Product management validation
+4. architect-checklist.md - Architecture review
+5. po-master-checklist.md - Product owner validation
+6. change-checklist.md - Change management process
+7. sprint-completion-checklist.md - Sprint retrospective
 
-[[LLM: Generate a comprehensive BROWNFIELD architecture document that reflects the ACTUAL state of the codebase.
-
-**CRITICAL**: This is NOT an aspirational architecture document. Document what EXISTS, including:
-
-- Technical debt and workarounds
-- Inconsistent patterns between different parts
-- Legacy code that can't be changed
-- Integration constraints
-- Performance bottlenecks
-
-**Document Structure**:
-
-# [Project Name] Brownfield Architecture Document
-
-## Introduction
-
-This document captures the CURRENT STATE of the [Project Name] codebase, including technical debt, workarounds, and real-world patterns. It serves as a reference for AI agents working on enhancements.
-
-### Document Scope
-
-[If PRD provided: "Focused on areas relevant to: {enhancement description}"]
-[If no PRD: "Comprehensive documentation of entire system"]
-
-### Change Log
-
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| [Date] | 1.0 | Initial brownfield analysis | [Analyst] |
-
-## Quick Reference - Key Files and Entry Points
-
-### Critical Files for Understanding the System
-
-- **Main Entry**: `src/index.js` (or actual entry point)
-- **Configuration**: `config/app.config.js`, `.env.example`
-- **Core Business Logic**: `src/services/`, `src/domain/`
-- **API Definitions**: `src/routes/` or link to OpenAPI spec
-- **Database Models**: `src/models/` or link to schema files
-- **Key Algorithms**: [List specific files with complex logic]
-
-### If PRD Provided - Enhancement Impact Areas
-
-[Highlight which files/modules will be affected by the planned enhancement]
-
-## High Level Architecture
-
-### Technical Summary
-
-### Actual Tech Stack (from package.json/requirements.txt)
-
-| Category | Technology | Version | Notes |
-|----------|------------|---------|--------|
-| Runtime | Node.js | 16.x | [Any constraints] |
-| Framework | Express | 4.18.2 | [Custom middleware?] |
-| Database | PostgreSQL | 13 | [Connection pooling setup] |
-
-etc...
-
-### Repository Structure Reality Check
-
-- Type: [Monorepo/Polyrepo/Hybrid]
-- Package Manager: [npm/yarn/pnpm]
-- Notable: [Any unusual structure decisions]
-
-## Source Tree and Module Organization
-
-### Project Structure (Actual)
-
-```text
-project-root/
-├── src/
-│   ├── controllers/     # HTTP request handlers
-│   ├── services/        # Business logic (NOTE: inconsistent patterns between user and payment services)
-│   ├── models/          # Database models (Sequelize)
-│   ├── utils/           # Mixed bag - needs refactoring
-│   └── legacy/          # DO NOT MODIFY - old payment system still in use
-├── tests/               # Jest tests (60% coverage)
-├── scripts/             # Build and deployment scripts
-└── config/              # Environment configs
+Select checklist number: 
+Entity Context (if applicable): [epic/story/sprint ID]
 ```
 
-### Key Modules and Their Purpose
-
-- **User Management**: `src/services/userService.js` - Handles all user operations
-- **Authentication**: `src/middleware/auth.js` - JWT-based, custom implementation
-- **Payment Processing**: `src/legacy/payment.js` - CRITICAL: Do not refactor, tightly coupled
-- **[List other key modules with their actual files]**
-
-## Data Models and APIs
-
-### Data Models
-
-Instead of duplicating, reference actual model files:
-- **User Model**: See `src/models/User.js`
-- **Order Model**: See `src/models/Order.js`
-- **Related Types**: TypeScript definitions in `src/types/`
-
-### API Specifications
-
-- **OpenAPI Spec**: `docs/api/openapi.yaml` (if exists)
-- **Postman Collection**: `docs/api/postman-collection.json`
-- **Manual Endpoints**: [List any undocumented endpoints discovered]
-
-## Technical Debt and Known Issues
-
-### Critical Technical Debt
-
-1. **Payment Service**: Legacy code in `src/legacy/payment.js` - tightly coupled, no tests
-2. **User Service**: Different pattern than other services, uses callbacks instead of promises
-3. **Database Migrations**: Manually tracked, no proper migration tool
-4. **[Other significant debt]**
-
-### Workarounds and Gotchas
-
-- **Environment Variables**: Must set `NODE_ENV=production` even for staging (historical reason)
-- **Database Connections**: Connection pool hardcoded to 10, changing breaks payment service
-- **[Other workarounds developers need to know]**
-
-## Integration Points and External Dependencies
-
-### External Services
-
-| Service | Purpose | Integration Type | Key Files |
-|---------|---------|------------------|-----------|
-| Stripe | Payments | REST API | `src/integrations/stripe/` |
-| SendGrid | Emails | SDK | `src/services/emailService.js` |
-
-etc...
-
-### Internal Integration Points
-
-- **Frontend Communication**: REST API on port 3000, expects specific headers
-- **Background Jobs**: Redis queue, see `src/workers/`
-- **[Other integrations]**
-
-## Development and Deployment
-
-### Local Development Setup
-
-1. Actual steps that work (not ideal steps)
-2. Known issues with setup
-3. Required environment variables (see `.env.example`)
-
-### Build and Deployment Process
-
-- **Build Command**: `npm run build` (webpack config in `webpack.config.js`)
-- **Deployment**: Manual deployment via `scripts/deploy.sh`
-- **Environments**: Dev, Staging, Prod (see `config/environments/`)
-
-## Testing Reality
-
-### Current Test Coverage
-
-- Unit Tests: 60% coverage (Jest)
-- Integration Tests: Minimal, in `tests/integration/`
-- E2E Tests: None
-- Manual Testing: Primary QA method
-
-### Running Tests
-
-```bash
-npm test           # Runs unit tests
-npm run test:integration  # Runs integration tests (requires local DB)
-```
-
-## If Enhancement PRD Provided - Impact Analysis
-
-### Files That Will Need Modification
-
-Based on the enhancement requirements, these files will be affected:
-- `src/services/userService.js` - Add new user fields
-- `src/models/User.js` - Update schema
-- `src/routes/userRoutes.js` - New endpoints
-- [etc...]
-
-### New Files/Modules Needed
-
-- `src/services/newFeatureService.js` - New business logic
-- `src/models/NewFeature.js` - New data model
-- [etc...]
-
-### Integration Considerations
-
-- Will need to integrate with existing auth middleware
-- Must follow existing response format in `src/utils/responseFormatter.js`
-- [Other integration points]
-
-## Appendix - Useful Commands and Scripts
-
-### Frequently Used Commands
-
-```bash
-npm run dev         # Start development server
-npm run build       # Production build
-npm run migrate     # Run database migrations
-npm run seed        # Seed test data
-```
-
-### Debugging and Troubleshooting
-
-- **Logs**: Check `logs/app.log` for application logs
-- **Debug Mode**: Set `DEBUG=app:*` for verbose logging
-- **Common Issues**: See `docs/troubleshooting.md`]]
-
-### 4. Document Delivery
-
-1. **In Web UI (Gemini, ChatGPT, Claude)**:
-   - Present the entire document in one response (or multiple if too long)
-   - Tell user to copy and save as `docs/brownfield-architecture.md` or `docs/project-architecture.md`
-   - Mention it can be sharded later in IDE if needed
-
-2. **In IDE Environment**:
-   - Create the document as `docs/brownfield-architecture.md`
-   - Inform user this single document contains all architectural information
-   - Can be sharded later using PO agent if desired
-
-The document should be comprehensive enough that future agents can understand:
-
-- The actual state of the system (not idealized)
-- Where to find key files and logic
-- What technical debt exists
-- What constraints must be respected
-- If PRD provided: What needs to change for the enhancement]]
-
-### 5. Quality Assurance
-
-CRITICAL: Before finalizing the document:
-
-1. **Accuracy Check**: Verify all technical details match the actual codebase
-2. **Completeness Review**: Ensure all major system components are documented
-3. **Focus Validation**: If user provided scope, verify relevant areas are emphasized
-4. **Clarity Assessment**: Check that explanations are clear for AI agents
-5. **Navigation**: Ensure document has clear section structure for easy reference
-
-Apply the advanced elicitation task after major sections to refine based on user feedback.
-
-## Success Criteria
-
-- Single comprehensive brownfield architecture document created
-- Document reflects REALITY including technical debt and workarounds
-- Key files and modules are referenced with actual paths
-- Models/APIs reference source files rather than duplicating content
-- If PRD provided: Clear impact analysis showing what needs to change
-- Document enables AI agents to navigate and understand the actual codebase
-- Technical constraints and "gotchas" are clearly documented
-
-## Notes
-
-- This task creates ONE document that captures the TRUE state of the system
-- References actual files rather than duplicating content when possible
-- Documents technical debt, workarounds, and constraints honestly
-- For brownfield projects with PRD: Provides clear enhancement impact analysis
-- The goal is PRACTICAL documentation for AI agents doing real work
-==================== END: .bmad-core/tasks/document-project.md ====================
-
-==================== START: .bmad-core/tasks/execute-checklist.md ====================
-# Checklist Validation Task
-
-This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
-
-## Available Checklists
-
-If the user asks or does not specify a specific checklist, list the checklists available to the agent persona. If the task is being run not with a specific agent, tell the user to check the .bmad-core/checklists folder to select the appropriate one to run.
-
-## Instructions
-
-1. **Initial Assessment**
-
-   - If user or the task being run provides a checklist name:
-     - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
-     - If multiple matches found, ask user to clarify
-     - Load the appropriate checklist from .bmad-core/checklists/
-   - If no checklist specified:
-     - Ask the user which checklist they want to use
-     - Present the available options from the files in the checklists folder
-   - Confirm if they want to work through the checklist:
-     - Section by section (interactive mode - very time consuming)
-     - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
-
-2. **Document and Artifact Gathering**
-
-   - Each checklist will specify its required documents/artifacts at the beginning
-   - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
-
-3. **Checklist Processing**
-
-   If in interactive mode:
-
-   - Work through each section of the checklist one at a time
-   - For each section:
-     - Review all items in the section following instructions for that section embedded in the checklist
-     - Check each item against the relevant documentation or artifacts as appropriate
-     - Present summary of findings for that section, highlighting warnings, errors and non applicable items (rationale for non-applicability).
-     - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
-
-   If in YOLO mode:
-
-   - Process all sections at once
-   - Create a comprehensive report of all findings
-   - Present the complete analysis to the user
-
-4. **Validation Approach**
-
-   For each checklist item:
-
-   - Read and understand the requirement
-   - Look for evidence in the documentation that satisfies the requirement
-   - Consider both explicit mentions and implicit coverage
-   - Aside from this, follow all checklist llm instructions
-   - Mark items as:
-     - ✅ PASS: Requirement clearly met
-     - ❌ FAIL: Requirement not met or insufficient coverage
-     - ⚠️ PARTIAL: Some aspects covered but needs improvement
-     - N/A: Not applicable to this case
-
-5. **Section Analysis**
-
-   For each section:
-
-   - think step by step to calculate pass rate
-   - Identify common themes in failed items
-   - Provide specific recommendations for improvement
-   - In interactive mode, discuss findings with user
-   - Document any user decisions or explanations
-
-6. **Final Report**
-
-   Prepare a summary that includes:
-
-   - Overall checklist completion status
-   - Pass rates by section
-   - List of failed items with context
-   - Specific recommendations for improvement
-   - Any sections or items marked as N/A with justification
-
-## Checklist Execution Methodology
-
-Each checklist now contains embedded LLM prompts and instructions that will:
-
-1. **Guide thorough thinking** - Prompts ensure deep analysis of each section
-2. **Request specific artifacts** - Clear instructions on what documents/access is needed
-3. **Provide contextual guidance** - Section-specific prompts for better validation
-4. **Generate comprehensive reports** - Final summary with detailed findings
-
-The LLM will:
-
-- Execute the complete checklist validation
-- Present a final report with pass/fail rates and key findings
-- Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-core/tasks/execute-checklist.md ====================
+**Context-Aware Checklist Enhancement:**
+
+Based on selected checklist and entity:
+1. **Story Checklists:** Use `bmad_query_tasks` to get story details for validation
+2. **Epic Checklists:** Use `bmad_query_epics` to get epic context
+3. **Sprint Checklists:** Use `bmad_get_current_sprint` for sprint-specific validation
+4. **Project Checklists:** Use `bmad_get_project_progress` for overall context
+
+### 2. MCP-Enhanced Checklist Execution
+
+**Real-Time Validation Checklist Processing:**
+
+For each checklist item:
+
+1. **Item Context Analysis:**
+   - Parse checklist item requirements
+   - Identify MCP queries needed for validation
+   - Gather relevant project data automatically
+
+2. **Automated Validation (Where Possible):**
+   ```
+   Checklist Item: "${checklist_item_text}"
+   
+   MCP Validation Status:
+   - Data Retrieved: ✅/❌
+   - Validation Result: ✅/❌/🔍 (needs review)
+   - Evidence: ${mcp_data_summary}
+   ```
+
+3. **Interactive Validation (Where Required):**
+   ```
+   Checklist Item: "${checklist_item_text}"
+   
+   Current Project State: ${relevant_mcp_data}
+   
+   Manual Validation Required:
+   - Review the above data
+   - Confirm compliance: [Y/N]
+   - Notes (if needed): ${user_notes}
+   ```
+
+4. **Progress Tracking:**
+   - Track completion status for each item
+   - Maintain validation evidence from MCP data
+   - Record any issues or blockers identified
+
+### 3. Checklist Validation Categories
+
+**Automated MCP Validations:**
+
+1. **Data Existence Checks:**
+   - Story exists in system: `bmad_query_tasks`
+   - Epic exists and has stories: `bmad_query_epics`
+   - Sprint is active: `bmad_get_current_sprint`
+   - Documents exist: Document queries
+
+2. **Data Completeness Checks:**
+   - Story has description: Validate via task query
+   - Epic has priority set: Validate via epic query
+   - Sprint has goal defined: Validate via sprint query
+   - Required fields populated: Field-specific validation
+
+3. **Relationship Validations:**
+   - Story assigned to epic: Cross-reference validation
+   - Story assigned to sprint: Sprint assignment check
+   - Document links exist: Link validation queries
+   - Dependencies properly set: Dependency validation
+
+**Interactive MCP-Assisted Validations:**
+
+1. **Quality Assessments:**
+   - Story acceptance criteria quality (show current criteria from MCP)
+   - Epic scope appropriateness (show epic details from MCP)
+   - Sprint goal achievability (show sprint progress from MCP)
+
+2. **Alignment Checks:**
+   - Story aligns with epic goals (show both for comparison)
+   - Epic aligns with project objectives (show project context)
+   - Sprint scope matches capacity (show current sprint data)
+
+### 4. Checklist Results and Documentation
+
+**MCP-Enhanced Results Summary:**
+
+1. **Checklist Completion Report:**
+   ```markdown
+   # Checklist Execution Report - ${checklist_name}
+   
+   ## Execution Context
+   - **Date**: ${execution_date}
+   - **Entity**: ${entity_type} ${entity_id}
+   - **Executor**: ${agent_name}
+   - **MCP Data Used**: ${mcp_queries_executed}
+   
+   ## Results Summary
+   - **Total Items**: ${total_items}
+   - **Passed**: ${passed_count} ✅
+   - **Failed**: ${failed_count} ❌
+   - **Needs Attention**: ${attention_count} 🔍
+   - **Not Applicable**: ${na_count} ⚪
+   
+   ## Detailed Results
+   ${item_by_item_results_with_mcp_evidence}
+   
+   ## Action Items
+   ${identified_action_items}
+   
+   ## MCP Data Evidence
+   ${relevant_mcp_data_snapshots}
+   ```
+
+2. **Store Checklist Results:** Use `bmad_create_document`:
+   ```json
+   {
+     "type": "checklist-results",
+     "title": "Checklist Results - ${checklist_name} - ${date}",
+     "content": "<checklist_report_markdown>",
+     "metadata": {
+       "checklist_type": "<checklist_name>",
+       "entity_type": "<entity_type>",
+       "entity_id": "<entity_id>",
+       "pass_rate": <percentage>,
+       "execution_date": "<date>"
+     }
+   }
+   ```
+
+### 5. Action Item Tracking and Follow-up
+
+**MCP-Enhanced Action Item Management:**
+
+1. **Action Item Creation:**
+   For each failed or attention-required checklist item:
+   ```json
+   {
+     "epic_num": <relevant_epic>,
+     "title": "Checklist Action: ${item_description}",
+     "description": "Address checklist item: ${item_text}\n\nEvidence: ${mcp_evidence}\n\nRequired Action: ${action_description}",
+     "assignee": "${responsible_agent}",
+     "priority": "HIGH"
+   }
+   ```
+
+2. **Link Action Items to Original Entity:**
+   ```json
+   {
+     "entity_type": "task",
+     "entity_id": "<action_item_id>",
+     "document_id": "<checklist_results_doc_id>",
+     "link_purpose": "checklist-followup"
+   }
+   ```
+
+### 6. Checklist Integration and Continuous Improvement
+
+**Checklist Pattern Analysis:**
+
+1. **Common Issue Identification:**
+   - Analyze historical checklist results
+   - Identify recurring failure patterns
+   - Suggest process improvements
+
+2. **Checklist Effectiveness Tracking:**
+   - Track checklist completion rates over time
+   - Monitor action item resolution rates
+   - Identify checklist items that need refinement
+
+**Integration with Development Flow:**
+
+1. **Pre-Development Checklists:**
+   - Validate story readiness before development
+   - Ensure epic completeness before story creation
+   - Confirm sprint readiness before sprint start
+
+2. **Post-Development Checklists:**
+   - Validate story completion before marking done
+   - Ensure epic closure criteria met
+   - Confirm sprint success criteria achieved
+
+## MCP Tools Reference
+
+### Required Tools:
+- `bmad_query_tasks` - Validate story-related checklist items
+- `bmad_query_epics` - Validate epic-related checklist items
+- `bmad_get_current_sprint` - Validate sprint-related checklist items
+- `bmad_get_project_progress` - Validate project-level checklist items
+- `bmad_create_document` - Store checklist results and reports
+- `bmad_create_story` - Create action items for failed checklist items
+- `bmad_link_entity_to_document` - Link results to relevant entities
+
+### Enhanced Resources:
+- `bmad://checklists/history` - Historical checklist execution data
+- `bmad://checklists/patterns` - Common failure pattern analysis
+- `bmad://project/quality-metrics` - Quality metrics derived from checklists
+
+## Critical Success Factors
+
+1. **Real-Time Validation:** Use MCP data for objective checklist validation
+2. **Evidence-Based Results:** Maintain clear evidence trail from MCP queries
+3. **Action Item Creation:** Convert failures into trackable action items
+4. **Continuous Improvement:** Analyze patterns for process enhancement
+5. **Integration:** Embed checklists into natural development workflow
+
+This MCP-enhanced approach ensures checklists are validated against real project data, results are properly documented, and follow-up actions are tracked through the project management system.
+==================== END: .bmad-core/tasks/execute-checklist-mcp.md ====================
 
 ==================== START: .bmad-core/templates/architecture-tmpl.yaml ====================
 template:

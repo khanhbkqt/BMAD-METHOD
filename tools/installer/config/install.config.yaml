@@ -1,13 +1,29 @@
 installation-options:
   full:
-    name: Complete BMad Core
-    description: Copy the entire .bmad-core folder with all agents, templates, and tools
+    name: Complete BMad Core + MCP + Web UI
+    description: Copy the entire .bmad-core folder with all agents, templates, tools, MCP server, and web UI
     action: copy-folder
     source: bmad-core
+    includes:
+      - mcp-server
+      - web-ui
+  mcp:
+    name: Complete BMad Core + MCP
+    description: Copy the entire .bmad-core folder with all agents, templates, tools, and MCP server (no web UI)
+    action: copy-folder
+    source: bmad-core
+    includes:
+      - mcp-server
   single-agent:
     name: Single Agent
     description: Select and install a single agent with its dependencies
     action: copy-agent
+  web-ui-only:
+    name: Web UI Only
+    description: Install only the web UI component (requires existing MCP server)
+    action: copy-mcp
+    includes:
+      - web-ui
 ide-configurations:
   cursor:
     name: Cursor

@@ -170,8 +170,8 @@ dependencies:
     - prd-template.md
     - user-story-template.md
   tasks:
-    - create-doc.md
-    - shard-doc.md
+    - create-doc-mcp.md
+    - shard-doc-mcp.md
   data:
     - bmad-kb.md
 ```

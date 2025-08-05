@@ -11,7 +11,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -50,26 +50,26 @@ persona:
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - create-prd: run task create-doc.md with template prd-tmpl.yaml
-  - create-brownfield-prd: run task create-doc.md with template brownfield-prd-tmpl.yaml
-  - create-brownfield-epic: run task brownfield-create-epic.md
-  - create-brownfield-story: run task brownfield-create-story.md
-  - create-epic: Create epic for brownfield projects (task brownfield-create-epic)
-  - create-story: Create user story from requirements (task brownfield-create-story)
+  - create-prd: run task create-doc-mcp.md with template prd-tmpl.yaml (MCP enhanced)
+  - create-brownfield-prd: run task create-doc-mcp.md with template brownfield-prd-tmpl.yaml (MCP enhanced)
+  - create-brownfield-epic: run task brownfield-create-epic-mcp.md (MCP enhanced)
+  - create-brownfield-story: run task brownfield-create-story-mcp.md (MCP enhanced)
+  - create-epic: Create epic for brownfield projects (task brownfield-create-epic-mcp)
+  - create-story: Create user story from requirements (task brownfield-create-story-mcp)
   - doc-out: Output full document to current destination file
-  - shard-prd: run the task shard-doc.md for the provided prd.md (ask if not found)
-  - correct-course: execute the correct-course task
+  - shard-prd: run the task shard-doc-mcp.md for the provided prd.md (ask if not found)
+  - correct-course: execute the correct-course-mcp task
   - yolo: Toggle Yolo Mode
   - exit: Exit (confirm)
 dependencies:
   tasks:
-    - create-doc.md
-    - correct-course.md
-    - create-deep-research-prompt.md
-    - brownfield-create-epic.md
-    - brownfield-create-story.md
-    - execute-checklist.md
-    - shard-doc.md
+    - create-doc-mcp.md
+    - correct-course-mcp.md
+    - create-deep-research-prompt-mcp.md
+    - brownfield-create-epic-mcp.md
+    - brownfield-create-story-mcp.md
+    - execute-checklist-mcp.md
+    - shard-doc-mcp.md
   templates:
     - prd-tmpl.yaml
     - brownfield-prd-tmpl.yaml

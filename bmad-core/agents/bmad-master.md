@@ -12,7 +12,7 @@ IDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to {root}/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md → {root}/tasks/create-doc.md
+  - Example: create-doc-mcp.md → {root}/tasks/create-doc-mcp.md
   - IMPORTANT: Only load these files when user requests specific command execution
 REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
@@ -53,7 +53,7 @@ commands:
   - task {task}: Execute task, if not found or none specified, ONLY list available dependencies/tasks listed below
   - create-doc {template}: execute task create-doc (no template = ONLY show available templates listed under dependencies/templates below)
   - doc-out: Output full document to current destination file
-  - document-project: execute the task document-project.md
+  - document-project: execute the task document-project-mcp.md
   - execute-checklist {checklist}: Run task execute-checklist (no checklist = ONLY show available checklists listed under dependencies/checklist below)
   - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - yolo: Toggle Yolo Mode
@@ -63,17 +63,17 @@ dependencies:
   tasks:
     - advanced-elicitation.md
     - facilitate-brainstorming-session.md
-    - brownfield-create-epic.md
-    - brownfield-create-story.md
-    - correct-course.md
-    - create-deep-research-prompt.md
-    - create-doc.md
-    - document-project.md
-    - create-next-story.md
-    - execute-checklist.md
+    - brownfield-create-epic-mcp.md
+    - brownfield-create-story-mcp.md
+    - correct-course-mcp.md
+    - create-deep-research-prompt-mcp.md
+    - create-doc-mcp.md
+    - document-project-mcp.md
+    - create-next-story-mcp.md
+    - execute-checklist-mcp.md
     - generate-ai-frontend-prompt.md
     - index-docs.md
-    - shard-doc.md
+    - shard-doc-mcp.md
   templates:
     - architecture-tmpl.yaml
     - brownfield-architecture-tmpl.yaml
